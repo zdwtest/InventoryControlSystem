@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>统计报表</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>统计报表</h1>
+        <h2>物资统计</h2>
+        <table class="table mt-3">
+            <thead>
+                <tr>
+                    <th>物资名称</th>
+                    <th>规格</th>
+                    <th>数量</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in supplies_data %}
+                    <tr>
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.specification }}</td>
+                        <td>{{ item.quantity }}</td>
+                   </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h2>采购统计</h2>
+        <table class="table mt-3">
+            <thead>
+                <tr>
+                    <th>物资名称</th>
+                    <th>采购次数</th>
+                    <th>采购总量</th>
+                    <th>采购总金额</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for purchase in purchase_data %}
+                    <tr>
+                        <td>{{ purchase.material_name }}</td>
+                        <td>{{ purchase.purchase_count }}</td>
+                        <td>{{ purchase.total_quantity }}</td>
+                        <td>{{ purchase.total_amount }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h2>其他统计信息...</h2>
+    </div>
+</body>
+</html>

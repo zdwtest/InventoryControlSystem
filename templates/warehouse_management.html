@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>出入库管理</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>出入库管理</h1>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class="flashes">
+                    {% for category, message in messages %}
+                        <li class="alert alert-{{ category }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+        <h2>新增出入库记录</h2>
+        <form method="POST">
+            <div class="form-group">
+                <label for="material_name">物资名称:</label>
+                <input type="text" class="form-control" id="material_name" name="material_name" required>
+            </div>
+            <div class="form-group">
+                <label for="quantity">数量:</label>
+                <input type="number" class="form-control" id="quantity" name="quantity" required>
+            </div>
+            <div class="form-group">
+                <label for="operation_type">操作类型:</label>
+                <select class="form-control" id="operation_type" name="operation_type">
+                    <option value="in">入库</option>
+                    <option value="out">出库</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">提交记录</button>
+        </form>
+
+        <h2>库存信息</h2>
+        <table class="table mt-3">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>物资名称</th>
+                    <th>数量</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in inventory %}
+                    <tr>
+                        <td>{{ item.id }}</td>
+                        <td>{{ item.material_name }}</td>
+                        <td>{{ item.quantity }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

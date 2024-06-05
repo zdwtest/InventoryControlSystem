@@ -1,0 +1,29 @@
+#采购管理
+@app.route('/purchase_management', methods=['GET', 'POST'])
+def purchase_management():
+
+
+#质量监控管理
+    @app.route('/quality_control', methods=['GET', 'POST'])
+    def quality_control():
+
+
+# 出入库管理
+@app.route('/warehouse_management', methods=['GET', 'POST'])
+def warehouse_management():
+
+
+# 财务管理
+@app.route('/finance_management', methods=['GET', 'POST'])
+def finance_management():
+
+
+# 统计报表
+@app.route('/report', methods=['GET', 'POST'])
+def report():
+
+
+# 系统管理
+@app.route('/system_management', methods=['GET', 'POST'])
+def system_management():
+

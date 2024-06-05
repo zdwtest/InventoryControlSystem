@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>基础数据管理</title>
+    <style>
+        .message {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        .success {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+        .danger {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <h1>基础数据管理</h1>
+
+    {% if message %}
+        <div class="message {{ message_type }}">{{ message }}</div>
+    {% endif %}
+
+    <form method="POST" action="">
+        <label for="物资名称">物资名称:</label>
+        <input type="text" name="物资名称" id="物资名称"><br><br>
+        <label for="规格">规格:</label>
+        <input type="text" name="规格" id="规格"><br><br>
+        <label for="数量">数量:</label>
+        <input type="number" name="数量" id="数量"><br><br>
+        <input type="submit" value="添加">
+    </form>
+    <table>
+        <thead>
+            <tr>
+                <th>物资名称</th>
+                <th>规格</th>
+                <th>数量</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in data %}
+            <tr>
+                <td>{{ row.name }}</td>
+                <td>{{ row.specification }}</td>
+                <td>{{ row.quantity }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

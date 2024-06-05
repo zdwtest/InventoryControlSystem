@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>质量监控管理</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>质量监控管理</h1>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class="flashes">
+                    {% for category, message in messages %}
+                        <li class="alert alert-{{ category }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+        <h2>新增质量检查记录</h2>
+        <form method="POST">
+            <div class="form-group">
+                <label for="material_name">物资名称:</label>
+               <input type="text" class="form-control" id="material_name" name="material_name" required>
+            </div>
+            <div class="form-group">
+                <label for="inspection_date">检查日期:</label>
+                <input type="date" class="form-control" id="inspection_date" name="inspection_date" required>
+            </div>
+            <div class="form-group">
+                <label for="inspector">检查员:</label>
+                <input type="text" class="form-control" id="inspector" name="inspector" required>
+            </div>
+            <div class="form-group">
+                <label for="result">结果:</label>
+                <select class="form-control" id="result" name="result">
+                    <option value="合格">合格</option>
+                    <option value="不合格">不合格</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="remarks">备注:</label>
+                <textarea class="form-control" id="remarks" name="remarks"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">提交记录</button>
+        </form>
+
+        <h2>质量检查记录列表</h2>
+        <table class="table mt-3">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>物资名称</th>
+                    <th>检查日期</th>
+                    <th>检查员</th>
+                    <th>结果</th>
+                    <th>备注</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in quality_records %}
+                    <tr>
+                        <td>{{ record.id }}</td>
+                        <td>{{ record.material_name }}</td>
+                        <td>{{ record.inspection_date }}</td>
+                        <td>{{ record.inspector }}</td>
+                        <td>{{ record.result }}</td>
+                        <td>{{ record.remarks }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
