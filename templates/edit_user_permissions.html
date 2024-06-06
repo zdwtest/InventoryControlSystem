@@ -3,10 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit User Permissions</title>
+    <title>编辑用户权限</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
+<nav>
+    <ul class="nav nav-pills">
+        <li class="nav-item"><a class="nav-link" href="/system_management">管理用户</a></li>
+        <li class="nav-item"><a class="nav-link" href="/manage_supplies">管理物资</a></li>
+        <li class="nav-item"><a class="nav-link" href="/manage_suppliers">管理供应商</a></li>
+        <li class="nav-item"><a class="nav-link" href="/manage_products">管理产品</a></li>
+        <li class="nav-item"><a class="nav-link" href="/purchase_management">管理采购</a></li>
+        <li class="nav-item"><a class="nav-link" href="/quality_control">管理质量控制</a></li>
+        <li class="nav-item"><a class="nav-link" href="/warehouse_management">管理仓库</a></li>
+        <li class="nav-item"><a class="nav-link" href="/finance_management">管理财务</a></li>
+    </ul>
+</nav>
+<a href="/logout" class="btn btn-danger">登出</a>
 <div class="container">
     <h1 class="mt-5">修改用户名为： {{ user.username }}的权限</h1>
     <form method="POST" class="mt-3">

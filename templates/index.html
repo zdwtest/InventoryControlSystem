@@ -6,11 +6,67 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-    <div class="container">
-        <h1>物资管理系统</h1>
-        <p>欢迎使用物资管理系统！</p>
-        <p>请点击下面的按钮进入系统。</p>
-        <a href="manage_supplies" class="btn btn-primary">进入系统</a>
-    </div>
+<div class="container">
+    <h1>物资管理系统</h1>
+    <nav class="nav">
+        <ul class="nav nav-pills">
+            {% if can_manage_users %}
+                <li class="nav-item"><a class="nav-link" href="/system_management">管理用户</a></li>
+            {% endif %}
+            {% if can_manage_supplies %}
+                <li class="nav-item"><a class="nav-link" href="/manage_supplies">管理物资</a></li>
+            {% endif %}
+            {% if can_manage_suppliers %}
+                <li class="nav-item"><a class="nav-link" href="/manage_suppliers">管理供应商</a></li>
+            {% endif %}
+            {% if can_manage_products %}
+                <li class="nav-item"><a class="nav-link" href="/manage_products">管理产品</a></li>
+            {% endif %}
+            {% if can_manage_purchases %}
+                <li class="nav-item"><a class="nav-link" href="/purchase_management">管理采购</a></li>
+            {% endif %}
+            {% if can_manage_quality_controls %}
+                <li class="nav-item"><a class="nav-link" href="/quality_control">管理质量控制</a></li>
+            {% endif %}
+            {% if can_manage_warehouses %}
+                <li class="nav-item"><a class="nav-link" href="/warehouse_management">管理仓库</a></li>
+            {% endif %}
+            {% if can_manage_finances %}
+                <li class="nav-item"><a class="nav-link" href="/finance_management">管理财务</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    <p>欢迎，{{ current_user.username }}！</p>
+    <p>您的权限：</p>
+    <ul>
+        {% if can_manage_users %}
+            <li>管理用户</li>
+        {% endif %}
+        {% if can_manage_supplies %}
+            <li>管理物资</li>
+        {% endif %}
+        {% if can_manage_suppliers %}
+            <li>管理供应商</li>
+        {% endif %}
+        {% if can_manage_products %}
+            <li>管理产品</li>
+        {% endif %}
+        {% if can_manage_purchases %}
+            <li>管理采购</li>
+        {% endif %}
+        {% if can_manage_quality_controls %}
+            <li>管理质量控制</li>
+        {% endif %}
+        {% if can_manage_warehouses %}
+            <li>管理仓库</li>
+        {% endif %}
+        {% if can_manage_finances %}
+            <li>管理财务</li>
+        {% endif %}
+    </ul>
+    <a href="/logout" class="btn btn-danger">登出</a>
+
+</div>
 </body>
 </html>

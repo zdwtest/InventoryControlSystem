@@ -4,17 +4,24 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0e045c2f-e6f7-4d89-a077-9d5c9daa13c5" name="更改" comment="完善登录功能，加入了session操作">
-      <change afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/edit_user_permissions.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/permissions_error.html" afterDir="false" />
+    <list default="true" id="0e045c2f-e6f7-4d89-a077-9d5c9daa13c5" name="更改" comment="加入了权限组">
+      <change afterPath="$PROJECT_DIR$/.idea/jsLibraryMappings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/applications/api/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/applications/api/get_user_data.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/manage_products.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/manage_suppliers.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/InventoryControlSystem.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/InventoryControlSystem.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/applications/database/database.py" beforeDir="false" afterPath="$PROJECT_DIR$/applications/database/database.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/edit_user_permissions.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/edit_user_permissions.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/finance_management.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/finance_management.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/manage.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/manage_supplies.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/manage_supplies.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/manage_supplies.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/purchase_management.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/purchase_management.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/quality_control.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/quality_control.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/report.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/report.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/system_management.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/system_management.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/creatAccount.py" beforeDir="false" afterPath="$PROJECT_DIR$/test/creatAccount.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/warehouse_management.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/warehouse_management.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -28,8 +35,8 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Flask Main" />
-        <option value="Python Script" />
         <option value="HTML File" />
+        <option value="Python Script" />
       </list>
     </option>
   </component>
@@ -131,7 +138,7 @@
       <option name="presentableId" value="Default" />
       <updated>1717568716207</updated>
       <workItem from="1717568717555" duration="6152000" />
-      <workItem from="1717642332194" duration="7529000" />
+      <workItem from="1717642332194" duration="10824000" />
     </task>
     <task id="LOCAL-00001" summary="init">
       <option name="closed" value="true" />
@@ -157,7 +164,15 @@
       <option name="project" value="LOCAL" />
       <updated>1717645923130</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="加入了权限组">
+      <option name="closed" value="true" />
+      <created>1717671885337</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1717671885337</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -166,7 +181,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="init" />
     <MESSAGE value="完善登录功能，加入了session操作" />
-    <option name="LAST_COMMIT_MESSAGE" value="完善登录功能，加入了session操作" />
+    <MESSAGE value="加入了权限组" />
+    <option name="LAST_COMMIT_MESSAGE" value="加入了权限组" />
   </component>
   <component name="VgoProject">
     <integration-enabled>false</integration-enabled>
@@ -175,7 +191,7 @@
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/InventoryControlSystem$creatAccount.coverage" NAME="creatAccount 覆盖结果" MODIFIED="1717669978751" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/test" />
     <SUITE FILE_PATH="coverage/InventoryControlSystem$InventoryControlSystem.coverage" NAME="InventoryControlSystem 覆盖结果" MODIFIED="1717642375209" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/InventoryControlSystem$Flask__app_py_.coverage" NAME="Flask (app.py) 覆盖结果" MODIFIED="1717671652280" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/InventoryControlSystem$Flask__app_py_.coverage" NAME="Flask (app.py) 覆盖结果" MODIFIED="1717674955703" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/InventoryControlSystem$Flask__applications_database_database_py_.coverage" NAME="Flask (applications/database/database.py) 覆盖结果" MODIFIED="1717669938390" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/InventoryControlSystem$Flask__app_database_database_py_.coverage" NAME="Flask (app/database/database.py) 覆盖结果" MODIFIED="1717571136011" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
   </component>

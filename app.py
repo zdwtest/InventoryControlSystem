@@ -3,7 +3,10 @@ from functools import wraps
 
 from flask import Flask, render_template, request, redirect, url_for, flash, session, abort, get_flashed_messages
 from werkzeug.security import check_password_hash
-from applications.database.database import Supplies, database, Finance, Warehouse, QualityControl, Purchase, Users
+
+from applications.api.get_user_data import get_user_data
+from applications.database.database import Supplies, database, Finance, Warehouse, QualityControl, Purchase, Users, \
+    Product, Supplier
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 
 app = Flask(__name__)
@@ -15,12 +18,15 @@ login_manager.login_view = 'login'
 # 路由
 app.secret_key = os.urandom(24)  # 必须设置密钥才能使用会话
 
-
 # 主页路由
+from flask import render_template, redirect, url_for
+
+
 @app.route('/', methods=['GET', 'POST'])
 @login_required
 def index():
-    return render_template('index.html')
+    user_data = get_user_data()
+    return render_template('index.html', **user_data)
 
 
 # 用户加载函数
@@ -89,6 +95,7 @@ def logout():
 def protected():
     return '这是一个受保护的页面，仅登录用户可见。'
 
+
 @app.route('/manage_supplies', methods=['GET', 'POST'])
 @login_required
 def manage_data():
@@ -133,8 +140,8 @@ def manage_data():
             data = []
 
         # 使用 Jinja2 模板渲染 HTML
-        return render_template('manage_supplies.html', data=data)
-
+        user_data = get_user_data()
+    return render_template('manage_supplies.html', data=data)
 
 
 # --- 采购管理 ---
@@ -177,6 +184,7 @@ def purchase_management():
 
     # 获取所有采购订单数据 (用于在页面上显示)
     purchases = Purchase.select()
+    user_data = get_user_data()
     return render_template('purchase_management.html', purchases=purchases)
 
 
@@ -218,7 +226,7 @@ def quality_control():
 
     # 获取所有质量检查记录 (用于在页面上显示)
     inspections = QualityControl.select()
-    return render_template('quality_control.html', inspections=inspections)
+    return render_template('quality_control.html', inspections=inspections,)
 
 
 # --- 出入库管理 ---
@@ -357,6 +365,83 @@ def report():
                            total_expenses=total_expenses,
                            net_profit=net_profit)
 
+# 管理供应商路由
+@app.route('/manage_suppliers', methods=['GET', 'POST'])
+@login_required
+def manage_suppliers():
+    # 从数据库查询当前用户的权限
+    with database.atomic():  # 使用上下文管理器确保连接正确打开和关闭
+        user_permissions = Users.select().where(Users.id == current_user.id).get()
+        if not user_permissions.can_manage_suppliers:
+            # 返回权限不足的 HTML 页面
+            return render_template('permissions_error.html', status=404)
+
+    if request.method == 'POST':
+        # 获取表单数据
+        name = request.form.get('name')
+        contact_person = request.form.get('contact_person')
+        phone = request.form.get('phone')
+        address = request.form.get('address')
+
+        # 验证数据
+        if not all([name, contact_person, phone, address]):
+            flash("请填写所有必填字段！", 'danger')
+        else:
+            # 创建供应商对象并保存到数据库
+            try:
+                Supplier.create(
+                    name=name,
+                    contact_person=contact_person,
+                    phone=phone,
+                    address=address
+                )
+                flash("供应商信息已成功添加！", 'success')
+                return redirect(url_for('manage_suppliers'))
+            except Exception as e:
+                flash(f"保存供应商信息时出错: {e}", 'danger')
+
+    # 获取所有供应商数据 (用于在页面上显示)
+    suppliers = Supplier.select()
+    return render_template('manage_suppliers.html', suppliers=suppliers)
+
+# 管理产品路由
+@app.route('/manage_products', methods=['GET', 'POST'])
+@login_required
+def manage_products():
+    # 从数据库查询当前用户的权限
+    with database.atomic():  # 使用上下文管理器确保连接正确打开和关闭
+        user_permissions = Users.select().where(Users.id == current_user.id).get()
+        if not user_permissions.can_manage_products:
+            # 返回权限不足的 HTML 页面
+            return render_template('permissions_error.html', status=404)
+
+    if request.method == 'POST':
+        # 获取表单数据
+        name = request.form.get('name')
+        description = request.form.get('description')
+        unit = request.form.get('unit')
+        price = request.form.get('price')
+
+        # 验证数据
+        if not all([name, description, unit, price]):
+            flash("请填写所有必填字段！", 'danger')
+        else:
+            # 创建产品对象并保存到数据库
+            try:
+                Product.create(
+                    name=name,
+                    description=description,
+                    unit=unit,
+                    price=price
+                )
+                flash("产品信息已成功添加！", 'success')
+                return redirect(url_for('manage_products'))
+            except Exception as e:
+                flash(f"保存产品信息时出错: {e}", 'danger')
+
+    # 获取所有产品数据 (用于在页面上显示)
+    products = Product.select()
+    return render_template('manage_products.html', products=products)
 
 # 系统管理视图
 @app.route('/system_management', methods=['GET', 'POST'])
