@@ -1,58 +1,60 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>基础数据管理</title>
-    <style>
-        .message {
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 5px;
-        }
-        .success {
-            background-color: #d4edda;
-            border-color: #c3e6cb;
-            color: #155724;
-        }
-        .danger {
-            background-color: #f8d7da;
-            border-color: #f5c6cb;
-            color: #721c24;
-        }
-    </style>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
+<div class="container mt-5">
     <h1>基础数据管理</h1>
 
-    {% if message %}
-        <div class="message {{ message_type }}">{{ message }}</div>
-    {% endif %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul class="flashes">
+                {% for category, message in messages %}
+                    <li class="alert alert-{{ category }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
 
+    <h2>添加物资</h2>
     <form method="POST" action="">
-        <label for="物资名称">物资名称:</label>
-        <input type="text" name="物资名称" id="物资名称"><br><br>
-        <label for="规格">规格:</label>
-        <input type="text" name="规格" id="规格"><br><br>
-        <label for="数量">数量:</label>
-        <input type="number" name="数量" id="数量"><br><br>
-        <input type="submit" value="添加">
+        <div class="form-group">
+            <label for="name">物资名称:</label>
+            <input type="text" class="form-control" id="name" name="name" required>
+        </div>
+        <div class="form-group">
+            <label for="specification">规格:</label>
+            <input type="text" class="form-control" id="specification" name="specification" required>
+        </div>
+        <div class="form-group">
+            <label for="quantity">数量:</label>
+            <input type="number" class="form-control" id="quantity" name="quantity" required>
+        </div>
+        <button type="submit" class="btn btn-primary">添加</button>
     </form>
-    <table>
+
+    <h2>物资列表</h2>
+    <table class="table mt-3">
         <thead>
-            <tr>
-                <th>物资名称</th>
-                <th>规格</th>
-                <th>数量</th>
-            </tr>
+        <tr>
+            <th>物资名称</th>
+            <th>规格</th>
+            <th>数量</th>
+        </tr>
         </thead>
         <tbody>
-            {% for row in data %}
+        {% for row in data %}
             <tr>
                 <td>{{ row.name }}</td>
                 <td>{{ row.specification }}</td>
                 <td>{{ row.quantity }}</td>
             </tr>
-            {% endfor %}
+        {% endfor %}
         </tbody>
     </table>
+</div>
 </body>
 </html>

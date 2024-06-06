@@ -1,29 +1,81 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+import os
 
-from applications.database.database import Supplies, database, Finance, Warehouse, QualityControl, Purchase
+from flask import Flask, render_template, request, redirect, url_for, flash, session
+from werkzeug.security import check_password_hash
+from applications.database.database import Supplies, database, Finance, Warehouse, QualityControl, Purchase, Users
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 
 app = Flask(__name__)
 
-
+# 配置 Flask-Login
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
 # 路由
-app.secret_key = 'test'  # 必须设置密钥才能使用会话
+app.secret_key = os.urandom(24)  # 必须设置密钥才能使用会话
 
-@app.route('/login', methods=['GET', 'POST'])
+
+# 主页路由
+@app.route('/', methods=['GET', 'POST'])
+@login_required
 def index():
+    return render_template('index.html')
+
+
+# 用户加载函数
+@login_manager.user_loader
+def load_user(user_id):
+    try:
+        return Users.get(Users.id == user_id)
+    except Users.DoesNotExist:
+        return None
+
+
+# 登录路由
+@app.route('/login', methods=['GET', 'POST'])
+def login():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
 
-        # 简单验证
-        if username == 'admin' and password == 'secret':
-            return '登录成功！'
-        else:
-            flash('用户名或密码错误', 'error')  # 存储错误消息
-            return redirect(url_for('index'))  # 重定向回登录页面
+        try:
+            user = Users.get(Users.username == username)
+            print(f"User found: {user.username}")  # 调试信息
+
+            # 确保哈希校验的逻辑正确
+            if check_password_hash(user.password, password):
+                login_user(user)
+                session['user_id'] = user.id  # 写入 session
+                print(f"User ID in session: {session['user_id']}")
+                return redirect(url_for('index'))
+            else:
+                flash('用户名或密码错误', 'error')
+                print('Password check failed')  # 调试信息
+                return redirect(url_for('login'))
+        except Users.DoesNotExist:
+            flash('用户名或密码错误', 'error')
+            print('User does not exist')  # 调试信息
+            return redirect(url_for('login'))
 
     return render_template('login.html')
 
+
+@app.route('/logout')
+@login_required  # 需要登录才能访问
+def logout():
+    logout_user()
+    session.pop('user_id', None)  # 清除 session
+    return redirect(url_for('login'))
+
+
+@app.route('/protected')
+@login_required  # 需要登录才能访问
+def protected():
+    return '这是一个受保护的页面，仅登录用户可见。'
+
+
 @app.route('/manage_data', methods=['GET', 'POST'])
+@login_required
 def manage_data():
     if request.method == 'POST':
         name = request.form.get('物资名称')
@@ -63,6 +115,7 @@ def manage_data():
 
 # --- 采购管理 ---
 @app.route('/purchase_management', methods=['GET', 'POST'])
+@login_required
 def purchase_management():
     if request.method == 'POST':
         # 1. 从表单获取数据
@@ -99,6 +152,7 @@ def purchase_management():
 
 # --- 质量监控管理 ---
 @app.route('/quality_control', methods=['GET', 'POST'])
+@login_required
 def quality_control():
     if request.method == 'POST':
         # 1. 从表单获取数据
@@ -131,9 +185,9 @@ def quality_control():
     return render_template('quality_control.html', inspections=inspections)
 
 
-
 # --- 出入库管理 ---
 @app.route('/warehouse_management', methods=['GET', 'POST'])
+@login_required
 def warehouse_management():
     if request.method == 'POST':
         # 1. 确定操作类型 (入库/出库)
@@ -186,9 +240,9 @@ def warehouse_management():
     return render_template('warehouse_management.html', inventory=inventory)
 
 
-
 # --- 财务管理 ---
 @app.route('/finance_management', methods=['GET', 'POST'])
+@login_required
 def finance_management():
     if request.method == 'POST':
         # 1. 从表单获取数据
@@ -221,6 +275,7 @@ def finance_management():
 
 # --- 统计报表 ---
 @app.route('/report', methods=['GET'])
+@login_required
 def report():
     # --- 物资统计 ---
     supplies_data = Supplies.select()
@@ -251,6 +306,7 @@ def report():
 
 # --- 系统管理 ---
 @app.route('/system_management', methods=['GET', 'POST'])
+@login_required
 def system_management():
     # 处理系统设置，例如用户管理、权限设置等
     # ...
@@ -258,5 +314,4 @@ def system_management():
 
 
 if __name__ == '__main__':
-
     app.run(debug=True)
