@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit User Permissions</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+    <h1 class="mt-5">修改用户名为： {{ user.username }}的权限</h1>
+    <form method="POST" class="mt-3">
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="can_manage_users" id="can_manage_users" {% if user.can_manage_users %}checked{% endif %}>
+            <label class="form-check-label" for="can_manage_users">管理用户组权限</label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="can_manage_supplies" id="can_manage_supplies" {% if user.can_manage_supplies %}checked{% endif %}>
+            <label class="form-check-label" for="can_manage_supplies">管理供应表权限</label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="can_manage_suppliers" id="can_manage_suppliers" {% if user.can_manage_suppliers %}checked{% endif %}>
+            <label class="form-check-label" for="can_manage_suppliers">管理供应商权限</label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="can_manage_products" id="can_manage_products" {% if user.can_manage_products %}checked{% endif %}>
+            <label class="form-check-label" for="can_manage_products">管理产品权限</label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="can_manage_purchases" id="can_manage_purchases" {% if user.can_manage_purchases %}checked{% endif %}>
+            <label class="form-check-label" for="can_manage_purchases">管理采购权限</label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="can_manage_quality_controls" id="can_manage_quality_controls" {% if user.can_manage_quality_controls %}checked{% endif %}>
+            <label class="form-check-label" for="can_manage_quality_controls">管理质量控制权限</label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="can_manage_warehouses" id="can_manage_warehouses" {% if user.can_manage_warehouses %}checked{% endif %}>
+            <label class="form-check-label" for="can_manage_warehouses">管理库存权限</label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="can_manage_finances" id="can_manage_finances" {% if user.can_manage_finances %}checked{% endif %}>
+            <label class="form-check-label" for="can_manage_finances">管理财务权限</label>
+        </div>
+        <button type="submit" class="btn btn-success mt-3">保存</button>
+    </form>
+</div>
+</body>
+</html>

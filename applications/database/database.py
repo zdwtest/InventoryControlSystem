@@ -21,9 +21,17 @@ class Users(Model, UserMixin):
     password = CharField()
     is_admin = BooleanField(default=False)  # 是否是管理员
     is_active = BooleanField(default=True)  # 用户是否被禁用
-
+    can_manage_users = BooleanField(default=False)
+    can_manage_supplies = BooleanField(default=False)
+    can_manage_suppliers = BooleanField(default=False)
+    can_manage_products = BooleanField(default=False)
+    can_manage_purchases = BooleanField(default=False)
+    can_manage_quality_controls = BooleanField(default=False)
+    can_manage_warehouses = BooleanField(default=False)
+    can_manage_finances = BooleanField(default=False)
     class Meta:
         database = database
+
 
 
 class Supplies(Model):
@@ -132,6 +140,8 @@ with app.app_context():
             Warehouse,
             Finance  # 添加Finance模型
         ])
+        # 设置 AUTO_INCREMENT
+        database.execute_sql('ALTER TABLE Users MODIFY id INT AUTO_INCREMENT')
         print("数据库连接成功！已创建表格。")
     except Exception as e:
         print(f"数据库连接或表格创建失败：{e}")

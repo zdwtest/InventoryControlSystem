@@ -1,64 +1,35 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>系统管理</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-    <div class="container mt-5">
-        <h1>系统管理</h1>
-        <h2>用户管理</h2>
-        <table class="table mt-3">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>用户名</th>
-                    <th>角色</th>
-                    <th>操作</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for user in users %}
-                    <tr>
-                        <td>{{ user.id }}</td>
-                        <td>{{ user.username }}</td>
-                        <td>{{ user.role }}</td>
-                        <td>
-                            <button class="btn btn-sm btn-warning">编辑</button>
-                            <button class="btn btn-sm btn-danger">删除</button>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
-        <h2>角色管理</h2>
-        <table class="table mt-3">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>角色名称</th>
-                    <th>权限</th>
-                    <th>操作</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for role in roles %}
-                    <tr>
-                        <td>{{ role.id }}</td>
-                        <td>{{ role.name }}</td>
-                        <td>{{ role.permissions }}</td>
-                        <td>
-                            <button class="btn btn-sm btn-warning">编辑</button>
-                            <button class="btn btn-sm btn-danger">删除</button>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
-        <h2>其他系统设置...</h2>
-    </div>
+<div class="container">
+    <h1 class="mt-5">系统管理</h1>
+    <h2 class="mt-4">用户管理</h2>
+    <table class="table table-bordered mt-3">
+        <thead class="thead-light">
+        <tr>
+            <th>用户名</th>
+            <th>是否为管理员</th>
+            <th>权限</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for user in users %}
+            <tr>
+                <td>{{ user.username }}</td>
+                <td>{{ user.is_admin }}</td>
+                <td>
+                    <a class="btn btn-primary" href="{{ url_for('edit_user_permissions', user_id=user.id) }}">Edit Permissions</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
 </body>
 </html>
