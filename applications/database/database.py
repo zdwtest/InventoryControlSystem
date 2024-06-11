@@ -6,8 +6,8 @@ from flask import Flask
 app = Flask(__name__)
 app.config['DATABASE'] = {
     'user': 'Inventory',
-    'password': 'd4iSGSa7KYc7SMm3',
-    'host': '162.251.92.166',
+    'password': 'password',
+    'host': 'xxx.xxx.xxx.xxx',
     'port': 3306
 }
 
