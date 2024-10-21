@@ -5,3 +5,5 @@ Flask~=3.0.3
 mysqlclient
 
 flask-login
+
+bcrypt

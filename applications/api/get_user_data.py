@@ -5,31 +5,35 @@ from applications.database.database import Users
 
 
 def get_user_data():
-    # 获取当前用户
     user = current_user
+    role = user.role
 
-    # 获取用户权限
-    user_permissions = Users.select().where(Users.id == user.id).get()
-    can_manage_users = user_permissions.can_manage_users
-    can_manage_supplies = user_permissions.can_manage_supplies
-    can_manage_suppliers = user_permissions.can_manage_suppliers
-    can_manage_products = user_permissions.can_manage_products
-    can_manage_purchases = user_permissions.can_manage_purchases
-    can_manage_quality_controls = user_permissions.can_manage_quality_controls
-    can_manage_warehouses = user_permissions.can_manage_warehouses
-    can_manage_finances = user_permissions.can_manage_finances
+    permissions = {
+        'admin': {
+            'can_manage_users': True,
+            'can_manage_supplies': True,
+            # ... 所有权限都是 True
+        },
+        'manager': {
+            'can_manage_users': False,
+            'can_manage_supplies': True,
+            # ... 部分权限是 True
+        },
+        'staff': {
+            'can_manage_users': False,
+            'can_manage_supplies': False,
+            # ... 大部分权限是 False
+        },
+        # ...其他角色
+    }
 
-    # 创建数据字典
+    user_permissions = permissions.get(role, {}) # 获取当前用户的权限，如果角色不存在，则使用空字典
+
     data = {
         'current_user': user,
-        'can_manage_users': can_manage_users,
-        'can_manage_supplies': can_manage_supplies,
-        'can_manage_suppliers': can_manage_suppliers,
-        'can_manage_products': can_manage_products,
-        'can_manage_purchases': can_manage_purchases,
-        'can_manage_quality_controls': can_manage_quality_controls,
-        'can_manage_warehouses': can_manage_warehouses,
-        'can_manage_finances': can_manage_finances,
+        'can_manage_users': user_permissions.get('can_manage_users', False),
+        'can_manage_supplies': user_permissions.get('can_manage_supplies', False),
+        # ... 其他权限，使用类似的 .get() 方法，并提供默认值 False
         'messages': get_flashed_messages()
     }
     return data

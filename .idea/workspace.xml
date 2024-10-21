@@ -5,23 +5,24 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0e045c2f-e6f7-4d89-a077-9d5c9daa13c5" name="更改" comment="加入了权限组">
-      <change afterPath="$PROJECT_DIR$/.idea/jsLibraryMappings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/applications/api/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/applications/api/get_user_data.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/manage_products.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/manage_suppliers.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/InventoryControlSystem.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/InventoryControlSystem.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/applications/route/Login_Route.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/applications/route/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/applications/api/get_user_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/applications/api/get_user_data.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/applications/database/database.py" beforeDir="false" afterPath="$PROJECT_DIR$/applications/database/database.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/edit_user_permissions.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/edit_user_permissions.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/finance_management.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/finance_management.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/manage_supplies.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/manage_supplies.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/purchase_management.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/purchase_management.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/quality_control.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/quality_control.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/report.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/report.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/system_management.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/system_management.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/warehouse_management.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/warehouse_management.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/finance_management.html" beforeDir="false" afterPath="$PROJECT_DIR$/OLD/finance_management.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/manage_products.html" beforeDir="false" afterPath="$PROJECT_DIR$/OLD/manage_products.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/manage_suppliers.html" beforeDir="false" afterPath="$PROJECT_DIR$/OLD/manage_suppliers.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/manage_supplies.html" beforeDir="false" afterPath="$PROJECT_DIR$/OLD/manage_supplies.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/purchase_management.html" beforeDir="false" afterPath="$PROJECT_DIR$/OLD/purchase_management.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/quality_control.html" beforeDir="false" afterPath="$PROJECT_DIR$/OLD/quality_control.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/system_management.html" beforeDir="false" afterPath="$PROJECT_DIR$/OLD/system_management.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/warehouse_management.html" beforeDir="false" afterPath="$PROJECT_DIR$/OLD/warehouse_management.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,6 +53,11 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
@@ -60,12 +66,12 @@
     &quot;assignee&quot;: &quot;zdwtest&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/zdwtest/InventoryControlSystem.git&quot;,
-    &quot;accountId&quot;: &quot;743a669c-8d1a-4e2a-94a4-f7d97508afdf&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/zdwtest/InventoryControlSystem.git",
+    "accountId": "b8fb80a1-9a20-4a2c-b926-d9897fa2dd0b"
   }
-}</component>
+}]]></component>
   <component name="GoLibraries">
     <option name="indexEntireGoPath" value="true" />
   </component>
@@ -90,14 +96,17 @@
     "Flask 服务器.Flask (app/database/database.py).executor": "Run",
     "Flask 服务器.Flask (applications/database/database.py).executor": "Run",
     "Flask 服务器.InventoryControlSystem.executor": "Run",
+    "Python.creatAccount.executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.go.formatter.settings.were.checked": "true",
     "RunOnceActivity.go.migrated.go.modules.settings": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "master",
+    "git-widget-placeholder": "2024-10",
     "go.import.settings.migrated": "true",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "H:/CODING/InventoryControlSystem/OLD",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -112,20 +121,22 @@
   "keyToStringList": {
     "DatabaseDriversLRU": [
       "java.sql.Driver",
-      "mysql"
+      "mysql",
+      "sqlite"
     ]
   }
 }]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="H:\CODING\InventoryControlSystem\OLD" />
       <recent name="C:\Users\z7299\PycharmProjects\InventoryControlSystem\app\database" />
     </key>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-1d06a55b98c1-91d5c284f522-JavaScript-PY-241.15989.155" />
-        <option value="bundled-python-sdk-babbdf50b680-7c6932dee5e4-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-241.15989.155" />
+        <option value="bundled-js-predefined-d6986cc7102b-5c90d61e3bab-JavaScript-PY-242.23339.19" />
+        <option value="bundled-python-sdk-0029f7779945-399fe30bd8c1-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-242.23339.19" />
       </set>
     </attachedChunks>
   </component>
@@ -139,6 +150,7 @@
       <updated>1717568716207</updated>
       <workItem from="1717568717555" duration="6152000" />
       <workItem from="1717642332194" duration="10824000" />
+      <workItem from="1729515083062" duration="2547000" />
     </task>
     <task id="LOCAL-00001" summary="init">
       <option name="closed" value="true" />
@@ -189,10 +201,10 @@
     <settings-migrated>true</settings-migrated>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/InventoryControlSystem$creatAccount.coverage" NAME="creatAccount 覆盖结果" MODIFIED="1717669978751" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/test" />
+    <SUITE FILE_PATH="coverage/InventoryControlSystem$Flask__applications_database_database_py_.coverage" NAME="Flask (applications/database/database.py) 覆盖结果" MODIFIED="1729516802663" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/InventoryControlSystem$Flask__app_py_.coverage" NAME="Flask (app.py) 覆盖结果" MODIFIED="1729517319212" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/InventoryControlSystem$creatAccount.coverage" NAME="creatAccount 覆盖结果" MODIFIED="1729516864220" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/test" />
     <SUITE FILE_PATH="coverage/InventoryControlSystem$InventoryControlSystem.coverage" NAME="InventoryControlSystem 覆盖结果" MODIFIED="1717642375209" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/InventoryControlSystem$Flask__app_py_.coverage" NAME="Flask (app.py) 覆盖结果" MODIFIED="1717674955703" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
-    <SUITE FILE_PATH="coverage/InventoryControlSystem$Flask__applications_database_database_py_.coverage" NAME="Flask (applications/database/database.py) 覆盖结果" MODIFIED="1717669938390" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/InventoryControlSystem$Flask__app_database_database_py_.coverage" NAME="Flask (app/database/database.py) 覆盖结果" MODIFIED="1717571136011" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
   </component>
 </project>
