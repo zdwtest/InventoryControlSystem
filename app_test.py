@@ -1,29 +1,144 @@
-from flask import Flask
-from flask_login import LoginManager
-from applications.routes.auth_routes import auth # 从 auth_routes 导入蓝图 auth
-from applications.routes.protect_routes import protected # 从 protect_routes 导入蓝图 protected
-from applications.database.database import Users
+import json
+import os
+from functools import wraps
+
+from flask import Flask, render_template, request, redirect, url_for, flash, session, abort
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user
+
+from applications.api.get_user_data import get_user_data
+from applications.database.database import database, Users, \
+    MaterialCategory, Material, ProductCategory, \
+    Product, ProductPriceBudgetFormula, \
+    ProductMaterial, ProductProcessParameter  # 导入数据库模型
 
 app = Flask(__name__)
-# ... 配置
+app.secret_key = os.urandom(24)
 
+
+# Flask-Login 设置
 login_manager = LoginManager()
 login_manager.init_app(app)
-login_manager.login_view = 'auth.login'  #  注意这里的修改，蓝图名.视图函数名
+login_manager.login_view = 'login'
+
 
 @login_manager.user_loader
 def load_user(user_id):
     try:
-        return Users.get(Users.id == int(user_id)) # 将 user_id 转换为整数
+        return Users.get(Users.id == user_id)
     except Users.DoesNotExist:
         return None
 
-# 注册蓝图，只需注册一次 auth 蓝图
-app.register_blueprint(auth, url_prefix='/auth') #  使用 url_prefix 将所有 auth 蓝图路由添加到 /auth 路径下
+
+# 管理员装饰器
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated or not current_user.is_admin:  # 简化管理员检查
+            flash('您没有权限访问此页面。', 'error')
+            return redirect(url_for('index'))
+        return f(*args, **kwargs)
+    return decorated_function
 
 
-# 其他路由
-app.register_blueprint(protected) # 如果 protected 也是蓝图
+# --- 路由 ---
 
+@app.route('/')
+@login_required
+def index():
+    user_data = get_user_data()
+    return render_template('index.html', **user_data)
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        try:
+            user = Users.get(Users.username == username)
+            if check_password_hash(user.password, password):  # 检查哈希密码
+                login_user(user)
+                return redirect(url_for('index'))
+            else:
+                flash('用户名或密码错误', 'error')
+        except Users.DoesNotExist:
+            flash('用户名或密码错误', 'error')
+    return render_template('login.html')
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
+
+
+# ... (其他路由，例如 manage_supplies, purchase_management 等)
+
+
+# 示例：如何在其他路由中加入权限控制
+@app.route('/manage_supplies', methods=['GET', 'POST'])
+@login_required
+def manage_supplies():  # 更正函数名
+    if not current_user.can_manage_supplies:  # 直接在用户对象上检查权限
+        flash('您没有权限访问此页面。', 'error')
+        return redirect(url_for('index'))
+
+    # ... 此路由的其余代码
+
+
+# ... (类似地修改其他路由，例如 purchase_management, quality_control 等)
+
+
+# 系统管理路由
+@app.route('/edit_user_permissions', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def edit_user_permissions():
+    if request.method == 'POST':
+        try:
+            user_id = request.form.get('user_id')
+            user = Users.get(Users.id == user_id)
+
+            if 'update_role' in request.form:
+                selected_roles = request.form.getlist('role')
+                user.role = ",".join(map(str, selected_roles))  # 使用逗号连接角色
+                user.save()
+                flash('用户角色已更新。', 'success')
+
+            elif 'toggle_active' in request.form:
+                user.is_active = not user.is_active
+                user.save()
+                flash(f"用户 {user.username} 已{'禁用' if not user.is_active else '启用'}。", 'success')
+
+            elif 'toggle_admin' in request.form:
+                user.is_admin = not user.is_admin
+                user.save()
+                flash(f"用户 {user.username} 的管理员权限已{'移除' if not user.is_admin else '授予'}。", 'success')
+
+        except (Users.DoesNotExist, ValueError, TypeError) as e:
+            print(e) # 打印错误信息，方便调试
+            flash('操作失败。', 'danger')
+        return redirect(url_for('edit_user_permissions'))  # 重定向
+
+    users = Users.select()
+    available_roles = [0, 1, 2, 3, 4]# 可用角色
+    roles_dict = {
+        0: '普通员工',
+        1: '设计部门负责人',
+        2: '生产部门负责人',
+        3: '仓库管理员',
+        4: '车间领料人'
+    }
+    for user in users:
+        try:
+            user.role = [int(r.strip()) for r in user.role.split(',') if
+                         r.strip()]  # 将角色字符串转换为整数列表
+        except (ValueError, AttributeError):
+            user.role = []  # 如果无法转换，则将角色设置为空列表
+
+    return render_template('edit_user_permissions.html', users=users, available_roles=available_roles,
+                           roles=roles_dict)  # 渲染模板
 if __name__ == '__main__':
     app.run(debug=True)
