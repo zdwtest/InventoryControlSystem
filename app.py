@@ -5,8 +5,8 @@ from flask import Flask, render_template, request, redirect, url_for, flash, ses
 from werkzeug.security import check_password_hash
 
 from applications.api.get_user_data import get_user_data
-from applications.database.database import Users, MaterialCategory, Material, ProductCategory, Product, ProductMaterial  # 导入所有模型
-from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from applications.database.database import Users  # 导入所有模型
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 
 app = Flask(__name__)
 

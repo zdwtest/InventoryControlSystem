@@ -4,25 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0e045c2f-e6f7-4d89-a077-9d5c9daa13c5" name="更改" comment="加入了权限组">
-      <change afterPath="$PROJECT_DIR$/applications/route/Login_Route.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/applications/route/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="0e045c2f-e6f7-4d89-a077-9d5c9daa13c5" name="更改" comment="修改了数据库">
+      <change afterPath="$PROJECT_DIR$/app_test.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/applications/routes/protect_routes.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/applications/api/get_user_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/applications/api/get_user_data.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/applications/database/database.py" beforeDir="false" afterPath="$PROJECT_DIR$/applications/database/database.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/edit_user_permissions.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/edit_user_permissions.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/finance_management.html" beforeDir="false" afterPath="$PROJECT_DIR$/OLD/finance_management.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/manage_products.html" beforeDir="false" afterPath="$PROJECT_DIR$/OLD/manage_products.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/manage_suppliers.html" beforeDir="false" afterPath="$PROJECT_DIR$/OLD/manage_suppliers.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/manage_supplies.html" beforeDir="false" afterPath="$PROJECT_DIR$/OLD/manage_supplies.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/purchase_management.html" beforeDir="false" afterPath="$PROJECT_DIR$/OLD/purchase_management.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/quality_control.html" beforeDir="false" afterPath="$PROJECT_DIR$/OLD/quality_control.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/system_management.html" beforeDir="false" afterPath="$PROJECT_DIR$/OLD/system_management.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/warehouse_management.html" beforeDir="false" afterPath="$PROJECT_DIR$/OLD/warehouse_management.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/applications/routes/Login_Route.py" beforeDir="false" afterPath="$PROJECT_DIR$/applications/routes/auth_routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/inventory.db" beforeDir="false" afterPath="$PROJECT_DIR$/inventory.db" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -66,12 +55,12 @@
     &quot;assignee&quot;: &quot;zdwtest&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/zdwtest/InventoryControlSystem.git",
-    "accountId": "b8fb80a1-9a20-4a2c-b926-d9897fa2dd0b"
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/zdwtest/InventoryControlSystem.git&quot;,
+    &quot;accountId&quot;: &quot;b8fb80a1-9a20-4a2c-b926-d9897fa2dd0b&quot;
   }
-}]]></component>
+}</component>
   <component name="GoLibraries">
     <option name="indexEntireGoPath" value="true" />
   </component>
@@ -94,6 +83,7 @@
     "DefaultHtmlFileTemplate": "HTML File",
     "Flask 服务器.Flask (app.py).executor": "Run",
     "Flask 服务器.Flask (app/database/database.py).executor": "Run",
+    "Flask 服务器.Flask (app_test.py).executor": "Run",
     "Flask 服务器.Flask (applications/database/database.py).executor": "Run",
     "Flask 服务器.InventoryControlSystem.executor": "Run",
     "Python.creatAccount.executor": "Run",
@@ -103,10 +93,11 @@
     "RunOnceActivity.go.migrated.go.modules.settings": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "WebServerToolWindowFactoryState": "false",
+    "database.data.extractors.current.export.id": "Comma-separated (CSV)_id",
     "git-widget-placeholder": "2024-10",
     "go.import.settings.migrated": "true",
     "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "H:/CODING/InventoryControlSystem/OLD",
+    "last_opened_file_path": "H:/CODING/InventoryControlSystem",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -115,7 +106,7 @@
     "project.structure.last.edited": "项目",
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.0",
-    "settings.editor.selected.configurable": "editor.preferences.tabs",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
     "vue.rearranger.settings.migration": "true"
   },
   "keyToStringList": {
@@ -127,6 +118,9 @@
   }
 }]]></component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="H:\CODING\InventoryControlSystem" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="H:\CODING\InventoryControlSystem\OLD" />
       <recent name="C:\Users\z7299\PycharmProjects\InventoryControlSystem\app\database" />
@@ -150,7 +144,9 @@
       <updated>1717568716207</updated>
       <workItem from="1717568717555" duration="6152000" />
       <workItem from="1717642332194" duration="10824000" />
-      <workItem from="1729515083062" duration="2547000" />
+      <workItem from="1729515083062" duration="3242000" />
+      <workItem from="1729594342355" duration="783000" />
+      <workItem from="1729595144406" duration="599000" />
     </task>
     <task id="LOCAL-00001" summary="init">
       <option name="closed" value="true" />
@@ -184,7 +180,15 @@
       <option name="project" value="LOCAL" />
       <updated>1717671885337</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="修改了数据库">
+      <option name="closed" value="true" />
+      <created>1729517766270</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1729517766270</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -194,17 +198,19 @@
     <MESSAGE value="init" />
     <MESSAGE value="完善登录功能，加入了session操作" />
     <MESSAGE value="加入了权限组" />
-    <option name="LAST_COMMIT_MESSAGE" value="加入了权限组" />
+    <MESSAGE value="修改了数据库" />
+    <option name="LAST_COMMIT_MESSAGE" value="修改了数据库" />
   </component>
   <component name="VgoProject">
     <integration-enabled>false</integration-enabled>
     <settings-migrated>true</settings-migrated>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/InventoryControlSystem$Flask__applications_database_database_py_.coverage" NAME="Flask (applications/database/database.py) 覆盖结果" MODIFIED="1729516802663" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
-    <SUITE FILE_PATH="coverage/InventoryControlSystem$Flask__app_py_.coverage" NAME="Flask (app.py) 覆盖结果" MODIFIED="1729517319212" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/InventoryControlSystem$Flask__applications_database_database_py_.coverage" NAME="Flask (applications/database/database.py) 覆盖结果" MODIFIED="1729595340396" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/InventoryControlSystem$Flask__app_py_.coverage" NAME="Flask (app.py) 覆盖结果" MODIFIED="1729517965174" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/InventoryControlSystem$creatAccount.coverage" NAME="creatAccount 覆盖结果" MODIFIED="1729516864220" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/test" />
     <SUITE FILE_PATH="coverage/InventoryControlSystem$InventoryControlSystem.coverage" NAME="InventoryControlSystem 覆盖结果" MODIFIED="1717642375209" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/InventoryControlSystem$Flask__app_database_database_py_.coverage" NAME="Flask (app/database/database.py) 覆盖结果" MODIFIED="1717571136011" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/InventoryControlSystem$Flask__app_test_py_.coverage" NAME="Flask (app_test.py) 覆盖结果" MODIFIED="1729518322966" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
   </component>
 </project>

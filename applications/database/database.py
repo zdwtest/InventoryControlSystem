@@ -1,84 +1,125 @@
-from flask_login import UserMixin
-from peewee import SqliteDatabase, Model, CharField, IntegerField, ForeignKeyField, DecimalField, DateField, TextField, \
-    BooleanField, AutoField
-
 from flask import Flask
+from flask_login import UserMixin
+from peewee import *
 
 app = Flask(__name__)
-app.config['DATABASE'] = 'inventory.db'  # 直接指定数据库文件路径
+app.config['DATABASE'] = 'inventory.db'  # 数据库文件路径
 
-database = SqliteDatabase(app.config['DATABASE']) # 使用 SqliteDatabase 并传入文件路径
+# 创建数据库实例，所有模型都将使用此数据库
+database = SqliteDatabase(app.config['DATABASE'])
 
-class Users(Model, UserMixin):
-    id = AutoField()  # 使用 AutoField 实现自增主键
-    username = CharField(unique=True)
-    password = CharField()
-    is_admin = BooleanField(default=False)
-    is_active = BooleanField(default=True)
-    # --- 权限字段 ---
-    role = CharField(null=True)
 
+# 定义基础模型，其他模型都将继承它
+class BaseModel(Model):
     class Meta:
-        database = SqliteDatabase('inventory.db')
+        database = database  # 设置所有子模型的数据库
 
 
-class MaterialCategory(Model): # 材料类别表
+# 用户模型
+class Users(BaseModel, UserMixin):
     id = AutoField()
-    name = CharField()
-    parent_category = ForeignKeyField('self', backref='subcategories', null=True) # 支持多级分类
+    username = CharField(unique=True)  # 用户名，唯一
+    password = CharField()  # 密码
+    is_admin = BooleanField(default=False)  # 是否管理员
+    is_active = BooleanField(default=True)  # 是否激活
+    role = CharField(null=True)  # 角色
 
     class Meta:
-        database = database
+        table_name = 'users'
+
+
+# 材料类别模型
+class MaterialCategory(BaseModel):
+    name = CharField()  # 类别名称
+    parent_category = ForeignKeyField('self', backref='subcategories', null=True)  # 父类别，支持多级分类
+
+    class Meta:
         table_name = 'material_categories'
 
 
-class Material(Model): # 材料表
-    id = AutoField()
-    category = ForeignKeyField(MaterialCategory, backref='materials')
-    name = CharField()
+# 材料模型
+class Material(BaseModel):
+    category = ForeignKeyField(MaterialCategory, backref='materials')  # 材料类别
+    name = CharField()  # 材料名称
     specification = CharField()  # 规格型号
+    unit = CharField()  # 单位
 
     class Meta:
-        database = database
         table_name = 'materials'
 
 
-class ProductCategory(Model): # 产品类别表，结构类似材料类别
-    id = AutoField()
-    name = CharField()
-    parent_category = ForeignKeyField('self', backref='subcategories', null=True)
+# 产品类别模型
+class ProductCategory(BaseModel):
+    name = CharField()  # 类别名称
+    parent_category = ForeignKeyField('self', backref='subcategories', null=True)  # 父类别，支持多级分类
 
     class Meta:
-        database = database
         table_name = 'product_categories'
 
 
-
-class Product(Model):
-    id = AutoField()
-    category = ForeignKeyField(ProductCategory, backref='products')
-    name = CharField()
-    description = TextField()
-    unit = CharField()
-    price = DecimalField(decimal_places=2)
+# 产品模型
+class Product(BaseModel):
+    category = ForeignKeyField(ProductCategory, backref='products')  # 产品类别
+    name = CharField()  # 产品名称
+    description = TextField(null=True)  # 描述
+    unit = CharField()  # 单位
 
     class Meta:
-        database = database
         table_name = 'products'
 
 
-class ProductMaterial(Model): # 产品用料表
-    product = ForeignKeyField(Product, backref='materials')
-    material = ForeignKeyField(Material, backref='products')
-    quantity = IntegerField()
+# 产品用料模型
+class ProductMaterial(BaseModel):
+    product = ForeignKeyField(Product, backref='materials')  # 产品
+    material = ForeignKeyField(Material, backref='products')  # 材料
+    quantity = DecimalField(decimal_places=2)  # 数量
 
     class Meta:
-        database = database
         table_name = 'product_materials'
 
 
+# 产品工序参数模型
+class ProductProcessParameter(BaseModel):
+    product = ForeignKeyField(Product, backref='process_parameters', primary_key=True)  # 产品，主键
+    manufacturing_time = DecimalField(decimal_places=2)  # 制造工时
+    galvanizing_cost = DecimalField(decimal_places=2)  # 镀锌成本
+    base_material_cost = DecimalField(decimal_places=2)  # 基础材料成本
+
+    class Meta:
+        table_name = 'product_process_parameters'
+
+# 价格预算公式模型
+class ProductPriceBudgetFormula(BaseModel):
+    product = ForeignKeyField(Product, backref='price_budget_formulas', primary_key=True)  # 产品，主键
+    name = CharField()  # 名称
+    formula = CharField()  # 公式
+    description = CharField(null=True)  # 描述
+    class Meta:
+        table_name = 'product_price_budget_formula'
+#(1, '定额材料费', '{取定额材料费}', '来源“产品用料定制”，-产品-设置'),
+#(2, '附加材料费', '{1}*0.02', NULL),
+#(3, '镀锌费', '{取镀锌费}*1.37', '来源“产品生产工序参数设置”，-产品-设置（面积）'),
+#(4, '制造工时费', '{取制造工时费}*2', '来源“产品生产工序参数设置”，-产品-设置'),
+#(5, '合计', '{1}+{2}+{3}+{4}', NULL),
+#(6, '管理费用', '{11}*0.02/1.17', NULL),
+#(7, '销售费用', '{11}*0.03/1.17', NULL),
+#(8, '制造费用', '{11}*0.03/1.17', NULL),
+#(9, '增值税', '{11}*0.17/1.17', NULL),
+#(10, '利润', '{11}-{6}-{7}-{8}-{9}-{5}', NULL),
+#(11, '单价', '{5}/0.66', NULL);
 
 
+
+    class Meta:
+        table_name = 'product_price_budget_formulas'
+
+# 在Flask应用上下文中创建数据库表
+with app.app_context():
+    database.create_tables([
+        Users, MaterialCategory, Material, ProductCategory, Product, ProductMaterial, ProductProcessParameter, ProductPriceBudgetFormula
+    ])
+
+# 可选：测试数据库连接 (在 Flask 应用上下文中)
 with app.app_context():
     try:
         Users.select().count()  # 尝试一个简单的查询
@@ -86,22 +127,13 @@ with app.app_context():
     except Exception as e:
         print(f"数据库连接失败: {e}")
 
-# 创建表格
-with app.app_context():
-    database.create_tables([
-        Users,
-        MaterialCategory,
-        Material,
-        ProductCategory,
-        Product,
-        ProductMaterial,
-    ]) # 注意这里有闭合的 ]
-    print("表格创建成功")
 
-
+# Flask应用关闭时关闭数据库连接
 @app.teardown_appcontext
 def close_connection(exception):
-    database.close()
+    if database:  # Check if database is initialized
+        database.close()
+
 
 
 if __name__ == '__main__':
