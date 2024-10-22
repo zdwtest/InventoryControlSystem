@@ -30,19 +30,24 @@ class Users(BaseModel, UserMixin):
 
 # 材料类别模型
 class MaterialCategory(BaseModel):
-    name = CharField()  # 类别名称
-    parent_category = ForeignKeyField('self', backref='subcategories', null=True)  # 父类别，支持多级分类
+    mc = CharField()
+    hh = CharField(unique=True)  # 货号(hh) 使用 code 作为主键，确保唯一性
+    parent_category = ForeignKeyField('self', backref='subcategories', null=True)
 
     class Meta:
         table_name = 'material_categories'
 
 
-# 材料模型
+# 材料规格模型
 class Material(BaseModel):
-    category = ForeignKeyField(MaterialCategory, backref='materials')  # 材料类别
-    name = CharField()  # 材料名称
-    specification = CharField()  # 规格型号
-    unit = CharField()  # 单位
+    category = ForeignKeyField(MaterialCategory, backref='materials')
+    mc = CharField()  # 材料名称
+    ggxh = CharField(null=True)  # 规格型号 (ggxh)
+    hh = CharField(unique=True)  # 货号(hh) 使用 code 作为主键，确保唯一性
+    dw = CharField(null=True)  # 单位 (dw)
+    kcs = DecimalField(decimal_places=2, null=True)  # 库存数量(kcs)
+    pjj = DecimalField(decimal_places=2, null=True)  # 平均价(pjj)
+    kczj = DecimalField(decimal_places=2, null=True)  # 库存总价(kczj)
 
     class Meta:
         table_name = 'materials'
@@ -88,35 +93,38 @@ class ProductProcessParameter(BaseModel):
     class Meta:
         table_name = 'product_process_parameters'
 
+
 # 价格预算公式模型
 class ProductPriceBudgetFormula(BaseModel):
     product = ForeignKeyField(Product, backref='price_budget_formulas', primary_key=True)  # 产品，主键
     name = CharField()  # 名称
     formula = CharField()  # 公式
     description = CharField(null=True)  # 描述
+
     class Meta:
         table_name = 'product_price_budget_formula'
-#(1, '定额材料费', '{取定额材料费}', '来源“产品用料定制”，-产品-设置'),
-#(2, '附加材料费', '{1}*0.02', NULL),
-#(3, '镀锌费', '{取镀锌费}*1.37', '来源“产品生产工序参数设置”，-产品-设置（面积）'),
-#(4, '制造工时费', '{取制造工时费}*2', '来源“产品生产工序参数设置”，-产品-设置'),
-#(5, '合计', '{1}+{2}+{3}+{4}', NULL),
-#(6, '管理费用', '{11}*0.02/1.17', NULL),
-#(7, '销售费用', '{11}*0.03/1.17', NULL),
-#(8, '制造费用', '{11}*0.03/1.17', NULL),
-#(9, '增值税', '{11}*0.17/1.17', NULL),
-#(10, '利润', '{11}-{6}-{7}-{8}-{9}-{5}', NULL),
-#(11, '单价', '{5}/0.66', NULL);
 
-
+    #(1, '定额材料费', '{取定额材料费}', '来源“产品用料定制”，-产品-设置'),
+    #(2, '附加材料费', '{1}*0.02', NULL),
+    #(3, '镀锌费', '{取镀锌费}*1.37', '来源“产品生产工序参数设置”，-产品-设置（面积）'),
+    #(4, '制造工时费', '{取制造工时费}*2', '来源“产品生产工序参数设置”，-产品-设置'),
+    #(5, '合计', '{1}+{2}+{3}+{4}', NULL),
+    #(6, '管理费用', '{11}*0.02/1.17', NULL),
+    #(7, '销售费用', '{11}*0.03/1.17', NULL),
+    #(8, '制造费用', '{11}*0.03/1.17', NULL),
+    #(9, '增值税', '{11}*0.17/1.17', NULL),
+    #(10, '利润', '{11}-{6}-{7}-{8}-{9}-{5}', NULL),
+    #(11, '单价', '{5}/0.66', NULL);
 
     class Meta:
         table_name = 'product_price_budget_formulas'
 
+
 # 在Flask应用上下文中创建数据库表
 with app.app_context():
     database.create_tables([
-        Users, MaterialCategory, Material, ProductCategory, Product, ProductMaterial, ProductProcessParameter, ProductPriceBudgetFormula
+        Users, MaterialCategory, Material, ProductCategory, Product, ProductMaterial, ProductProcessParameter,
+        ProductPriceBudgetFormula
     ])
 
 # 可选：测试数据库连接 (在 Flask 应用上下文中)
@@ -133,7 +141,6 @@ with app.app_context():
 def close_connection(exception):
     if database:  # Check if database is initialized
         database.close()
-
 
 
 if __name__ == '__main__':

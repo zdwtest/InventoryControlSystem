@@ -4,13 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0e045c2f-e6f7-4d89-a077-9d5c9daa13c5" name="更改" comment="修改了数据库">
-      <change afterPath="$PROJECT_DIR$/app_test.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/applications/routes/protect_routes.py" afterDir="false" />
+    <list default="true" id="0e045c2f-e6f7-4d89-a077-9d5c9daa13c5" name="更改" comment="加入要求所需的数据库表">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/app_test.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/applications/database/database.py" beforeDir="false" afterPath="$PROJECT_DIR$/applications/database/database.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/applications/routes/Login_Route.py" beforeDir="false" afterPath="$PROJECT_DIR$/applications/routes/auth_routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/applications/routes/auth_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/applications/routes/auth_routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/applications/routes/protect_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/applications/routes/protect_routes.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/inventory.db" beforeDir="false" afterPath="$PROJECT_DIR$/inventory.db" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -87,6 +86,8 @@
     "Flask 服务器.Flask (applications/database/database.py).executor": "Run",
     "Flask 服务器.InventoryControlSystem.executor": "Run",
     "Python.creatAccount.executor": "Run",
+    "Python.importDatabase.executor": "Run",
+    "Python.protect_routes.executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.go.formatter.settings.were.checked": "true",
@@ -97,7 +98,7 @@
     "git-widget-placeholder": "2024-10",
     "go.import.settings.migrated": "true",
     "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "H:/CODING/InventoryControlSystem",
+    "last_opened_file_path": "H:/CODING/InventoryControlSystem/材料规格表(总仓).xls",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -146,7 +147,7 @@
       <workItem from="1717642332194" duration="10824000" />
       <workItem from="1729515083062" duration="3242000" />
       <workItem from="1729594342355" duration="783000" />
-      <workItem from="1729595144406" duration="599000" />
+      <workItem from="1729595144406" duration="4111000" />
     </task>
     <task id="LOCAL-00001" summary="init">
       <option name="closed" value="true" />
@@ -188,7 +189,15 @@
       <option name="project" value="LOCAL" />
       <updated>1729517766270</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="加入要求所需的数据库表">
+      <option name="closed" value="true" />
+      <created>1729595792004</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1729595792004</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -199,18 +208,21 @@
     <MESSAGE value="完善登录功能，加入了session操作" />
     <MESSAGE value="加入了权限组" />
     <MESSAGE value="修改了数据库" />
-    <option name="LAST_COMMIT_MESSAGE" value="修改了数据库" />
+    <MESSAGE value="加入要求所需的数据库表" />
+    <option name="LAST_COMMIT_MESSAGE" value="加入要求所需的数据库表" />
   </component>
   <component name="VgoProject">
     <integration-enabled>false</integration-enabled>
     <settings-migrated>true</settings-migrated>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/InventoryControlSystem$Flask__applications_database_database_py_.coverage" NAME="Flask (applications/database/database.py) 覆盖结果" MODIFIED="1729595340396" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/InventoryControlSystem$Flask__applications_database_database_py_.coverage" NAME="Flask (applications/database/database.py) 覆盖结果" MODIFIED="1729598966397" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/InventoryControlSystem$Flask__app_py_.coverage" NAME="Flask (app.py) 覆盖结果" MODIFIED="1729517965174" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/InventoryControlSystem$importDatabase.coverage" NAME="importDatabase 覆盖结果" MODIFIED="1729597254412" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/applications/database" />
     <SUITE FILE_PATH="coverage/InventoryControlSystem$creatAccount.coverage" NAME="creatAccount 覆盖结果" MODIFIED="1729516864220" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/test" />
     <SUITE FILE_PATH="coverage/InventoryControlSystem$InventoryControlSystem.coverage" NAME="InventoryControlSystem 覆盖结果" MODIFIED="1717642375209" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/InventoryControlSystem$Flask__app_database_database_py_.coverage" NAME="Flask (app/database/database.py) 覆盖结果" MODIFIED="1717571136011" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
-    <SUITE FILE_PATH="coverage/InventoryControlSystem$Flask__app_test_py_.coverage" NAME="Flask (app_test.py) 覆盖结果" MODIFIED="1729518322966" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/InventoryControlSystem$Flask__app_test_py_.coverage" NAME="Flask (app_test.py) 覆盖结果" MODIFIED="1729596029606" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/InventoryControlSystem$protect_routes.coverage" NAME="protect_routes 覆盖结果" MODIFIED="1729596027082" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/applications/routes" />
   </component>
 </project>

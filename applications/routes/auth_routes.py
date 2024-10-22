@@ -1,45 +1,37 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, session, app
+# auth_routes.py (applications/routes/auth_routes.py)
+
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from werkzeug.security import check_password_hash
 from flask_login import login_user, logout_user, login_required, current_user
+from applications.database.database import Users
 
-from app import login_manager
-from applications.database.database import Users # 导入你的User模型
+auth = Blueprint('auth', __name__)
 
-auth = Blueprint('auth', __name__) # 创建蓝图
-
-
-# 登录路由
-@app.route('/login', methods=['GET', 'POST'])
+@auth.route('/login', methods=['GET', 'POST'])  # 使用 blueprint.route
 def login():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
 
         try:
-            user = Users.get(Users.username == username)  # 使用 User 模型
-            print(f"User found: {user.username}")  # 调试信息
-
-            if check_password_hash(user.password, password):  # 校验密码
+            user = Users.get(Users.username == username)
+            if check_password_hash(user.password, password):
                 login_user(user)
-                session['user_id'] = user.id  # 将用户 ID 保存到 session
-                print(f"User ID in session: {session['user_id']}")  # 调试信息
-                return redirect(url_for('index'))
+                session['user_id'] = user.id
+                return redirect(url_for('index')) #  如果 index 在另一个蓝图中，需要指定蓝图名.index，例如 'main.index' 或者使用 url_for('protected.protected') 指向受保护的路由
             else:
                 flash('用户名或密码错误', 'error')
-                print('Password check failed')  # 调试信息
-                return redirect(url_for('login'))
-        except Users.DoesNotExist:  # 使用 User 模型
+                return redirect(url_for('auth.login')) # 使用蓝图名.视图函数名
+        except Users.DoesNotExist:
             flash('用户名或密码错误', 'error')
-            print('User does not exist')  # 调试信息
-            return redirect(url_for('login'))
+            return redirect(url_for('auth.login')) # 使用蓝图名.视图函数名
 
     return render_template('login.html')
 
 
-# 登出路由
-@app.route('/logout')
+@auth.route('/logout')  # 使用 blueprint.route
 @login_required
 def logout():
     logout_user()
-    session.pop('user_id', None)  # 清除 session 中的用户 ID
-    return redirect(url_for('login'))
+    session.pop('user_id', None)
+    return redirect(url_for('auth.login')) #  或者重定向到其他页面，例如 'index'
