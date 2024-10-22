@@ -3,6 +3,7 @@ import os
 from functools import wraps
 
 from flask import Flask, render_template, request, redirect, url_for, flash, session, abort
+from select import select
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 
@@ -31,14 +32,16 @@ def load_user(user_id):
 
 
 # 管理员装饰器
-def admin_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if not current_user.is_authenticated or not current_user.is_admin:  # 简化管理员检查
-            flash('您没有权限访问此页面。', 'error')
+def admin_required(func):
+    def wrapper(*args, **kwargs):
+        if current_user.is_authenticated and current_user.is_admin:  # 只检查 is_admin
+            return func(*args, **kwargs)
+        else:
+            flash('您没有权限访问此页面。', 'danger')
             return redirect(url_for('index'))
-        return f(*args, **kwargs)
-    return decorated_function
+
+    wrapper.__name__ = func.__name__
+    return wrapper
 
 
 # --- 路由 ---
@@ -77,18 +80,18 @@ def logout():
 # ... (其他路由，例如 manage_supplies, purchase_management 等)
 
 
-# 示例：如何在其他路由中加入权限控制
-@app.route('/manage_supplies', methods=['GET', 'POST'])
+# 管理材料规格路由
+@app.route('/materials', methods=['GET', 'POST'])
 @login_required
-def manage_supplies():  # 更正函数名
-    if not current_user.can_manage_supplies:  # 直接在用户对象上检查权限
+def manage_materials():  # 函数名更正为 manage_materials
+    if current_user.role != 1:  # 使用 current_user 并直接比较 role 值
         flash('您没有权限访问此页面。', 'error')
         return redirect(url_for('index'))
 
-    # ... 此路由的其余代码
+    return render_template('materials.html')
 
 
-# ... (类似地修改其他路由，例如 purchase_management, quality_control 等)
+
 
 
 # 系统管理路由
