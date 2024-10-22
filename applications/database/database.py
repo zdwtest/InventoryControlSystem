@@ -30,8 +30,9 @@ class Users(BaseModel, UserMixin):
 
 # 材料类别模型
 class MaterialCategory(BaseModel):
+    id = AutoField()
     mc = CharField()
-    hh = CharField(unique=True)  # 货号(hh) 使用 code 作为主键，确保唯一性
+    hh = CharField(unique=True)  # 货号(hh) 作为主键，确保唯一性
     parent_category = ForeignKeyField('self', backref='subcategories', null=True)
 
     class Meta:
@@ -40,12 +41,13 @@ class MaterialCategory(BaseModel):
 
 # 材料规格模型
 class Material(BaseModel):
+    id = AutoField()
     category = ForeignKeyField(MaterialCategory, backref='materials')
     mc = CharField()  # 材料名称
     ggxh = CharField(null=True)  # 规格型号 (ggxh)
     hh = CharField(unique=True)  # 货号(hh) 使用 code 作为主键，确保唯一性
     dw = CharField(null=True)  # 单位 (dw)
-    kcs = DecimalField(decimal_places=2, null=True)  # 库存数量(kcs)
+    kcs = DecimalField(decimal_places=2, null=False)  # 库存数量(kcs)
     pjj = DecimalField(decimal_places=2, null=True)  # 平均价(pjj)
     kczj = DecimalField(decimal_places=2, null=True)  # 库存总价(kczj)
 
@@ -55,8 +57,10 @@ class Material(BaseModel):
 
 # 产品类别模型
 class ProductCategory(BaseModel):
-    name = CharField()  # 类别名称
-    parent_category = ForeignKeyField('self', backref='subcategories', null=True)  # 父类别，支持多级分类
+    id = AutoField()
+    mc = CharField()
+    hh = CharField(unique=True)  # 货号(hh) 作为主键，确保唯一性
+    parent_category = ForeignKeyField('self', backref='subcategories', null=True)
 
     class Meta:
         table_name = 'product_categories'
@@ -64,10 +68,13 @@ class ProductCategory(BaseModel):
 
 # 产品模型
 class Product(BaseModel):
-    category = ForeignKeyField(ProductCategory, backref='products')  # 产品类别
-    name = CharField()  # 产品名称
-    description = TextField(null=True)  # 描述
-    unit = CharField()  # 单位
+    id = AutoField()
+    category = ForeignKeyField(ProductCategory, backref='products')
+    mc = CharField()  # 材料名称
+    ggxh = CharField(null=True)  # 规格型号 (ggxh)
+    hh = CharField(unique=True)  # 货号(hh) 使用 code 作为主键，确保唯一性
+    dw = CharField(null=True)  # 单位 (dw)
+    kcs = DecimalField(decimal_places=2, null=False)  # 库存数量(kcs)
 
     class Meta:
         table_name = 'products'
