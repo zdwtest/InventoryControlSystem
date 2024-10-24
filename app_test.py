@@ -3,9 +3,11 @@ import os
 from functools import wraps
 
 from flask import Flask, render_template, request, redirect, url_for, flash, session, abort
+from peewee import IntegrityError
 from select import select
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import LoginManager, login_user, login_required, logout_user, current_user
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user, user_unauthorized, \
+    user_accessed
 
 from applications.api.get_user_data import get_user_data
 from applications.database.database import database, Users, \
@@ -22,11 +24,28 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
+PERMISSION_VIEW = 0x1
+PERMISSION_MANAGE_MATERIALS = 0x2
+PERMISSION_VIEW_USERS = 0x4
+PERMISSION_MANAGE_USERS = 0x8
+PERMISSION_VIEW_REPORTS = 0x10
+PERMISSION_MANAGE_REPORTS = 0x20
+
+roles_dict = {
+    PERMISSION_VIEW: '普通员工',  # Map permissions to roles
+    PERMISSION_MANAGE_MATERIALS: '设计部门负责人',
+    PERMISSION_VIEW_USERS: '生产部门负责人',
+    PERMISSION_MANAGE_USERS: '仓库管理员',
+    PERMISSION_VIEW_REPORTS: '车间领料人'  # Add additional roles as needed
+}
+
 
 @login_manager.user_loader
 def load_user(user_id):
     try:
-        return Users.get(Users.id == user_id)
+        return Users.get(Users.id == user_id,Users.is_active == user_accessed,
+                         )
+
     except Users.DoesNotExist:
         return None
 
@@ -55,6 +74,7 @@ def index():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    user_data = get_user_data()
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
@@ -67,7 +87,7 @@ def login():
                 flash('用户名或密码错误', 'error')
         except Users.DoesNotExist:
             flash('用户名或密码错误', 'error')
-    return render_template('login.html')
+    return render_template('login.html',**user_data)
 
 
 @app.route('/logout')
@@ -77,18 +97,25 @@ def logout():
     return redirect(url_for('login'))
 
 
-# ... (其他路由，例如 manage_supplies, purchase_management 等)
-
+# 测试用户角色路由
+@app.route('/test_user_roles')
+@login_required
+def test_user_roles():
+    user_data = get_user_data()
+    print(user_data)
+    return render_template('test_user_roles.html', **user_data)
 
 # 管理材料规格路由
 @app.route('/materials', methods=['GET', 'POST'])
 @login_required
 def manage_materials():  # 函数名更正为 manage_materials
-    if current_user.role != 1:  # 使用 current_user 并直接比较 role 值
+    user_data = get_user_data()
+    if not has_permission(current_user, PERMISSION_VIEW):
         flash('您没有权限访问此页面。', 'error')
         return redirect(url_for('index'))
 
-    return render_template('materials.html')
+    return render_template('materials.html',**user_data)
+
 
 
 
@@ -101,47 +128,45 @@ def manage_materials():  # 函数名更正为 manage_materials
 def edit_user_permissions():
     if request.method == 'POST':
         try:
-            user_id = request.form.get('user_id')
-            user = Users.get(Users.id == user_id)
+            with database.atomic():
+                user_id = request.form.get('user_id')
+                user = Users.get(Users.id == user_id)
 
-            if 'update_role' in request.form:
-                selected_roles = request.form.getlist('role')
-                user.role = ",".join(map(str, selected_roles))  # 使用逗号连接角色
+                if request.form.get('selectAll') == '1':
+                    selected_roles = sum(available_roles)
+                else:
+                    selected_roles = [int(r, 16) for r in request.form.getlist('role')]
+
+                user.permissions = user.permissions | sum(selected_roles)
                 user.save()
                 flash('用户角色已更新。', 'success')
 
-            elif 'toggle_active' in request.form:
-                user.is_active = not user.is_active
-                user.save()
-                flash(f"用户 {user.username} 已{'禁用' if not user.is_active else '启用'}。", 'success')
+        except (Users.DoesNotExist, ValueError, TypeError, IntegrityError) as e:
+            flash(f'操作失败: {e}', 'danger')
+            print(f"更新用户权限失败: {e}")
+        return redirect(url_for('edit_user_permissions'))
 
-            elif 'toggle_admin' in request.form:
-                user.is_admin = not user.is_admin
-                user.save()
-                flash(f"用户 {user.username} 的管理员权限已{'移除' if not user.is_admin else '授予'}。", 'success')
-
-        except (Users.DoesNotExist, ValueError, TypeError) as e:
-            print(e) # 打印错误信息，方便调试
-            flash('操作失败。', 'danger')
-        return redirect(url_for('edit_user_permissions'))  # 重定向
 
     users = Users.select()
-    available_roles = [0, 1, 2, 3, 4]# 可用角色
+    available_roles = [0x1, 0x2, 0x4, 0x8, 0x10]
     roles_dict = {
-        0: '普通员工',
-        1: '设计部门负责人',
-        2: '生产部门负责人',
-        3: '仓库管理员',
-        4: '车间领料人'
+        0x1: '普通员工',
+        0x2: '材料管理负责人',
+        0x4: '产品管理负责人',
+        0x8: '仓库管理员',
+        0x10: '车间领料人'
     }
-    for user in users:
-        try:
-            user.role = [int(r.strip()) for r in user.role.split(',') if
-                         r.strip()]  # 将角色字符串转换为整数列表
-        except (ValueError, AttributeError):
-            user.role = []  # 如果无法转换，则将角色设置为空列表
 
-    return render_template('edit_user_permissions.html', users=users, available_roles=available_roles,
-                           roles=roles_dict)  # 渲染模板
+    return render_template('edit_user_permissions.html', users=users, available_roles=available_roles, roles=roles_dict)
+
+#权限检查函数 (添加到你的代码中)
+def has_permission(user, permission):
+    return (user.permissions & permission) == permission
+
+# 注册自定义 Jinja2 过滤器
+@app.template_filter('check_permission')
+def check_permission(permissions, role):
+    return (permissions & role) != 0
+
 if __name__ == '__main__':
     app.run(debug=True)

@@ -22,7 +22,8 @@ class Users(BaseModel, UserMixin):
     password = CharField()  # 密码
     is_admin = BooleanField(default=False)  # 是否管理员
     is_active = BooleanField(default=True)  # 是否激活
-    role = CharField(null=True)  # 角色
+    role = IntegerField(null=True)  # 角色
+    permissions = IntegerField(default=0)  # 添加permissions字段
 
     class Meta:
         table_name = 'users'

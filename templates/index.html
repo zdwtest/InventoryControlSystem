@@ -8,65 +8,27 @@
 <body>
 <div class="container">
     <h1>物资管理系统</h1>
+    <h2>欢迎回来，{{username}}！</h2>
     <nav class="nav">
         <ul class="nav nav-pills">
-            {% if can_manage_users %}
-                <li class="nav-item"><a class="nav-link" href="/system_management">管理用户</a></li>
-            {% endif %}
-            {% if can_manage_supplies %}
-                <li class="nav-item"><a class="nav-link" href="/manage_supplies">管理物资</a></li>
-            {% endif %}
-            {% if can_manage_suppliers %}
-                <li class="nav-item"><a class="nav-link" href="/manage_suppliers">管理供应商</a></li>
-            {% endif %}
-            {% if can_manage_products %}
-                <li class="nav-item"><a class="nav-link" href="/manage_products">管理产品</a></li>
-            {% endif %}
-            {% if can_manage_purchases %}
-                <li class="nav-item"><a class="nav-link" href="/purchase_management">管理采购</a></li>
-            {% endif %}
-            {% if can_manage_quality_controls %}
-                <li class="nav-item"><a class="nav-link" href="/quality_control">管理质量控制</a></li>
-            {% endif %}
-            {% if can_manage_warehouses %}
-                <li class="nav-item"><a class="nav-link" href="/warehouse_management">管理仓库</a></li>
-            {% endif %}
-            {% if can_manage_finances %}
-                <li class="nav-item"><a class="nav-link" href="/finance_management">管理财务</a></li>
-            {% endif %}
+            <li class="nav-item"><a class="nav-link" href="/test_user_roles">测试用户角色</a></li>
+                <li class="nav-item"><a class="nav-link" href="/edit_user_permissions">管理用户</a></li>
+                <li class="nav-item"><a class="nav-link" href="/materials">材料规格</a></li>
+                <li class="nav-item"><a class="nav-link" href="/manage_suppliers">产品规格</a></li>
         </ul>
     </nav>
 
-    <p>欢迎，{{ current_user.username }}！</p>
-    <p>您的权限：</p>
-    <ul>
-        {% if can_manage_users %}
-            <li>管理用户</li>
-        {% endif %}
-        {% if can_manage_supplies %}
-            <li>管理物资</li>
-        {% endif %}
-        {% if can_manage_suppliers %}
-            <li>管理供应商</li>
-        {% endif %}
-        {% if can_manage_products %}
-            <li>管理产品</li>
-        {% endif %}
-        {% if can_manage_purchases %}
-            <li>管理采购</li>
-        {% endif %}
-        {% if can_manage_quality_controls %}
-            <li>管理质量控制</li>
-        {% endif %}
-        {% if can_manage_warehouses %}
-            <li>管理仓库</li>
-        {% endif %}
-        {% if can_manage_finances %}
-            <li>管理财务</li>
-        {% endif %}
-    </ul>
     <a href="/logout" class="btn btn-danger">登出</a>
 
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <ul class="flashes">
+            {% for category, message in messages %}
+                <li class="{{ category }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endwith %}
 </div>
 </body>
 </html>
