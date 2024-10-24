@@ -6,7 +6,7 @@
 </head>
 <body>
 <div class="container">
-    <h1>系统管理</h1>
+
 
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
@@ -17,6 +17,7 @@
     {% endwith %}
 
 {% include 'header.html' %}
+    <h2>系统管理</h2>
 
     <table class="table table-striped">
         <thead>

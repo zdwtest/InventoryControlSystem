@@ -1,6 +1,8 @@
 import json
 import os
 from functools import wraps
+from itertools import product
+
 from flask import Flask, render_template, request, redirect, url_for, flash, session, abort
 from peewee import IntegrityError
 from select import select
@@ -25,15 +27,15 @@ login_manager.login_view = 'login'
 
 PERMISSION_VIEW = 0x1
 PERMISSION_MANAGE_MATERIALS = 0x2
-PERMISSION_VIEW_USERS = 0x4
+PERMISSION_MANAGE_PRODUCTS = 0x4
 PERMISSION_MANAGE_USERS = 0x8
 PERMISSION_VIEW_REPORTS = 0x10
 PERMISSION_MANAGE_REPORTS = 0x20
 
 roles_dict = {
     PERMISSION_VIEW: '普通员工',  # Map permissions to roles
-    PERMISSION_MANAGE_MATERIALS: '设计部门负责人',
-    PERMISSION_VIEW_USERS: '生产部门负责人',
+    PERMISSION_MANAGE_MATERIALS: '材料部门负责人',
+    PERMISSION_MANAGE_PRODUCTS: '产品部门负责人',
     PERMISSION_MANAGE_USERS: '仓库管理员',
     PERMISSION_VIEW_REPORTS: '车间领料人'  # Add additional roles as needed
 }
@@ -238,8 +240,138 @@ def delete_material(material_id):
     return redirect(url_for('materials'))
 
 
+# 管理产品规格路由
+@app.route('/products', defaults={'page': 1, 'q': ''})
+@app.route('/products/<int:page>', defaults={'q': ''})
+@app.route('/products/<int:page>/<string:q>')
+@login_required
+def view_products(page, q):
+    """显示物料列表，包含分页和搜索功能。"""
+    try:
+        per_page = 10
+        page = max(1, page)
 
-# 系统管理路由
+        query = Product.select().join(ProductCategory)
+
+        if q:
+            search_terms = q.split()
+            for term in search_terms:
+                query = query.where(
+                    (Product.mc.contains(term)) |
+                    (Product.ggxh.contains(term)) |
+                    (Product.hh.contains(term)) |
+                    (ProductCategory.mc.contains(term))
+                )
+
+        total = query.count()
+        offset = (page - 1) * per_page
+        products = (query
+                     .order_by(Product.id)
+                     .offset(offset)
+                     .limit(per_page)
+                     .objects()
+                     )
+
+        total_pages = (total + per_page - 1) // per_page
+
+        return render_template('products.html', products=products,
+                               current_page=page, total_pages=total_pages, per_page=per_page,
+                               q=q,
+                               max=max, min=min,
+                               user_data=get_user_data())
+
+    except Exception as e:
+        print(f"Error in view_products: {e}")
+        return render_template('index.html', error_message="加载物料时发生错误"), 500
+
+
+
+# 管理产品规格路由 (新增和修改)
+@app.route('/products/manage', methods=['GET', 'POST'])
+@app.route('/products/manage/<int:product_id>', methods=['GET', 'POST'])  # 允许编辑已有记录
+@login_required
+def manage_products(product_id=None):
+    user_data = get_user_data()
+    if not has_permission(current_user, PERMISSION_MANAGE_PRODUCTS):
+        flash('您没有权限管理产品规格。', 'error')
+        return redirect(url_for('products'))
+
+    categories = ProductCategory.select()
+    product = Product.get_or_none(Product.id == product_id) if product_id else None
+
+    if request.method == 'POST':
+        try:
+            category_id = int(request.form['category'])
+            mc = request.form['mc']
+            ggxh = request.form['ggxh']
+            hh = request.form['hh']
+            dw = request.form['dw']
+            kcs = request.form['kcs']
+            pjj = request.form['pjj']
+
+            # 数据验证
+            if not mc or not hh or not kcs:
+                raise ValueError("产品名称、货号和库存数量不能为空")
+            try:
+                kcs = float(kcs)
+                if kcs < 0:
+                    raise ValueError("库存数量不能为负数")
+            except ValueError:
+                raise ValueError("库存数量必须是数字")
+
+            if product:
+                product.category = ProductCategory.get(ProductCategory.id == category_id)
+                product.mc = mc
+                product.ggxh = ggxh
+                product.hh = hh
+                product.dw = dw
+                product.kcs = kcs
+                product.pjj = float(pjj) if pjj else None
+                product.save()
+                flash('产品规格修改成功!', 'success')
+            else:
+                new_product = product.create(
+                    category=ProductCategory.get(ProductCategory.id == category_id),
+                    mc=mc,
+                    ggxh=ggxh,
+                    hh=hh,
+                    dw=dw,
+                    kcs=kcs,
+                    pjj=float(pjj) if pjj else None,
+                )
+                flash('产品规格添加成功!', 'success')
+
+        except ProductCategory.DoesNotExist:
+            flash("选择的类别不存在", 'error')
+        except Exception as e:
+            database.rollback()
+            flash(f'操作失败: {e}', 'error')
+            return render_template('products_manage.html', product=product, categories=categories, **user_data)
+
+    return render_template('products_manage.html', product=product, categories=categories, **user_data)
+
+
+# 删除产品规格路由
+@app.route('/products/<int:product_id>/delete', methods=['POST'])
+@login_required
+def delete_product(product_id):
+    if not has_permission(current_user, PERMISSION_MANAGE_PRODUCTS):
+        flash('您没有权限删除产品规格。', 'error')
+        return redirect(url_for('view_products'))
+
+    product = Product.get_or_none(Product.id == product_id)
+    if product:
+        try:
+            product.delete_instance()
+            flash('产品规格删除成功!', 'success')
+        except Exception as e:
+            flash(f'删除失败: {e}', 'error')
+    else:
+        flash('产品规格不存在', 'error')
+    return redirect(url_for('products'))
+
+
+# 用户权限编辑路由
 @app.route('/edit_user_permissions', methods=['GET', 'POST'])
 @login_required
 @admin_required
