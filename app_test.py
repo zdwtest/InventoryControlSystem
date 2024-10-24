@@ -1,7 +1,6 @@
 import json
 import os
 from functools import wraps
-
 from flask import Flask, render_template, request, redirect, url_for, flash, session, abort
 from peewee import IntegrityError
 from select import select
@@ -106,18 +105,137 @@ def test_user_roles():
     return render_template('test_user_roles.html', **user_data)
 
 # 管理材料规格路由
-@app.route('/materials', methods=['GET', 'POST'])
+@app.route('/materials', defaults={'page': 1, 'q': ''})
+@app.route('/materials/<int:page>', defaults={'q': ''})
+@app.route('/materials/<int:page>/<string:q>')
 @login_required
-def manage_materials():  # 函数名更正为 manage_materials
+def view_materials(page, q):
+    """显示物料列表，包含分页和搜索功能。"""
+    try:
+        per_page = 10
+        page = max(1, page)
+
+        query = Material.select().join(MaterialCategory)
+
+        if q:
+            search_terms = q.split()
+            for term in search_terms:
+                query = query.where(
+                    (Material.mc.contains(term)) |
+                    (Material.ggxh.contains(term)) |
+                    (Material.hh.contains(term)) |
+                    (MaterialCategory.mc.contains(term))
+                )
+
+        total = query.count()
+        offset = (page - 1) * per_page
+        materials = (query
+                     .order_by(Material.id)
+                     .offset(offset)
+                     .limit(per_page)
+                     .objects()
+                     )
+
+        total_pages = (total + per_page - 1) // per_page
+
+        return render_template('materials.html', materials=materials,
+                               current_page=page, total_pages=total_pages, per_page=per_page,
+                               q=q,
+                               max=max, min=min,
+                               user_data=get_user_data())
+
+    except Exception as e:
+        print(f"Error in view_materials: {e}")
+        return render_template('index.html', error_message="加载物料时发生错误"), 500
+
+
+
+# 管理材料规格路由 (新增和修改)
+@app.route('/materials/manage', methods=['GET', 'POST'])
+@app.route('/materials/manage/<int:material_id>', methods=['GET', 'POST'])  # 允许编辑已有记录
+@login_required
+def manage_materials(material_id=None):
     user_data = get_user_data()
-    if not has_permission(current_user, PERMISSION_VIEW):
-        flash('您没有权限访问此页面。', 'error')
-        return redirect(url_for('index'))
+    if not has_permission(current_user, PERMISSION_MANAGE_MATERIALS):
+        flash('您没有权限管理材料规格。', 'error')
+        return redirect(url_for('materials'))
 
-    return render_template('materials.html',**user_data)
+    categories = MaterialCategory.select()
+    material = Material.get_or_none(Material.id == material_id) if material_id else None
+
+    if request.method == 'POST':
+        try:
+            category_id = int(request.form['category'])
+            mc = request.form['mc']
+            ggxh = request.form['ggxh']
+            hh = request.form['hh']
+            dw = request.form['dw']
+            kcs = request.form['kcs']
+            pjj = request.form['pjj']
+            kczj = request.form['kczj']
+
+            # 数据验证
+            if not mc or not hh or not kcs:
+                raise ValueError("材料名称、货号和库存数量不能为空")
+            try:
+                kcs = float(kcs)
+                if kcs < 0:
+                    raise ValueError("库存数量不能为负数")
+            except ValueError:
+                raise ValueError("库存数量必须是数字")
+
+            if material:
+                material.category = MaterialCategory.get(MaterialCategory.id == category_id)
+                material.mc = mc
+                material.ggxh = ggxh
+                material.hh = hh
+                material.dw = dw
+                material.kcs = kcs
+                material.pjj = float(pjj) if pjj else None
+                material.kczj = float(kczj) if kczj else None
+                material.save()
+                flash('材料规格修改成功!', 'success')
+            else:
+                new_material = Material.create(
+                    category=MaterialCategory.get(MaterialCategory.id == category_id),
+                    mc=mc,
+                    ggxh=ggxh,
+                    hh=hh,
+                    dw=dw,
+                    kcs=kcs,
+                    pjj=float(pjj) if pjj else None,
+                    kczj=float(kczj) if kczj else None,
+                )
+                flash('材料规格添加成功!', 'success')
+
+        except MaterialCategory.DoesNotExist:
+            flash("选择的类别不存在", 'error')
+        except Exception as e:
+            database.rollback()
+            flash(f'操作失败: {e}', 'error')
+            return render_template('materials_manage.html', material=material, categories=categories, **user_data)
+
+    return render_template('materials_manage.html', material=material, categories=categories, **user_data)
 
 
+# 删除材料规格路由
+@app.route('/materials/<int:material_id>/delete', methods=['POST'])
+@login_required
+def delete_material(material_id):
+    if not has_permission(current_user, PERMISSION_MANAGE_MATERIALS):
+        flash('您没有权限删除材料规格。', 'error')
+        return redirect(url_for('view_materials'))
 
+    material = Material.get_or_none(Material.id == material_id)
+    if material:
+        try:
+            material.delete_instance()
+            flash('材料规格删除成功!', 'success')
+        except Exception as e:
+            flash(f'删除失败: {e}', 'error')
+    else:
+        flash('材料规格不存在', 'error')
+    return redirect(url_for('materials'))
 
 
 
@@ -133,7 +251,7 @@ def edit_user_permissions():
                 user = Users.get(Users.id == user_id)
 
                 if request.form.get('selectAll') == '1':
-                    selected_roles = sum(available_roles)
+                    selected_roles = sum("0")
                 else:
                     selected_roles = [int(r, 16) for r in request.form.getlist('role')]
 

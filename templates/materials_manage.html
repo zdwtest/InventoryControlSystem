@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>材料规格管理</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+{% include 'header.html' %}
+
+<div class="container">
+  <h1>材料规格管理</h1>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <ul class="list-group">
+        {% for category, message in messages %}
+          <li class="list-group-item list-group-item-{{ category }}">{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+
+  <form method="POST" action="{{ url_for('manage_materials', material_id=material.id) if material else url_for('manage_materials') }}">
+    <div class="mb-3">
+      <label for="category" class="form-label">类别</label>
+      <select id="category" name="category" class="form-select">
+        {% for category in categories %}
+          <option value="{{ category.id }}" {% if material and material.category.id == category.id %}selected{% endif %}>{{ category.mc }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="mb-3">
+      <label for="mc" class="form-label">材料名称</label>
+      <input type="text" id="mc" name="mc" class="form-control" value="{{ material.mc if material else '' }}">
+    </div>
+    <div class="mb-3">
+      <label for="ggxh" class="form-label">规格型号</label>
+      <input type="text" id="ggxh" name="ggxh" class="form-control" value="{{ material.ggxh if material else '' }}">
+    </div>
+    <div class="mb-3">
+      <label for="hh" class="form-label">货号</label>
+      <input type="text" id="hh" name="hh" class="form-control" value="{{ material.hh if material else '' }}">
+    </div>
+    <div class="mb-3">
+      <label for="dw" class="form-label">单位</label>
+      <input type="text" id="dw" name="dw" class="form-control" value="{{ material.dw if material else '' }}">
+    </div>
+    <div class="mb-3">
+      <label for="kcs" class="form-label">库存数量</label>
+      <input type="number" id="kcs" name="kcs" class="form-control" value="{{ material.kcs if material else '' }}">
+    </div>
+    <div class="mb-3">
+      <label for="pjj" class="form-label">平均价</label>
+      <input type="number" id="pjj" name="pjj" class="form-control" value="{{ material.pjj if material else '' }}">
+    </div>
+    <div class="mb-3">
+      <label for="kczj" class="form-label">库存总价</label>
+      <input type="number" id="kczj" name="kczj" class="form-control" value="{{ material.kczj if material else '' }}">
+    </div>
+    <button type="submit" class="btn btn-primary">保存</button>
+    {% if material %}
+      <a href="{{ url_for('delete_material', material_id=material.id) }}" class="btn btn-danger" onclick="return confirm('确定要删除吗？')">删除</a>
+    {% endif %}
+  </form>
+</div>
+</div>
+</body>
+</html>

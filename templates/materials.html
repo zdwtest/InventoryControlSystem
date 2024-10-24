@@ -2,28 +2,81 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>材料规格</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
 <body>
 <div class="container">
+    {% include 'header.html' %}
+    <nav>
+    <li class="nav-item"><a class="nav-link" href="/materials_manage">管理材料规格</a></li>
+    </nav>
+    <form method="GET" action="{{ url_for('view_materials') }}">
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" name="q" placeholder="搜索材料..." value="{{ q }}">
+            <button class="btn btn-outline-secondary" type="submit">搜索</button>
+        </div>
+    </form>
 
-{% include 'header.html' %}
-
-    <nav class="nav">
-         <ul class="nav nav-pills">
-             <li class="nav-item"><a class="nav-link" href="/manage_materials">管理材料规格</a></li>
-         </ul>
-        </nav>
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        <ul class="flashes">
-            {% for category, message in messages %}
-                <li class="{{ category }}">{{ message }}</li>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>类别</th>
+                <th>材料名称</th>
+                <th>规格型号</th>
+                <th>货号</th>
+                <th>单位</th>
+                <th>库存数量</th>
+                <th>平均价</th>
+                <th>库存总价</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for material in materials %}
+                <tr>
+                    <td>{{ material.id }}</td>
+                    <td>{{ material.category.mc }}</td>
+                    <td>{{ material.mc }}</td>
+                    <td>{{ material.ggxh }}</td>
+                    <td>{{ material.hh }}</td>
+                    <td>{{ material.dw }}</td>
+                    <td>{{ material.kcs }}</td>
+                    <td>{{ material.pjj }}</td>
+                    <td>{{ material.kczj }}</td>
+                    <td>
+                        <a href="{{ url_for('manage_materials', material_id=material.id) }}" class="btn btn-primary btn-sm">编辑</a>
+                        <form method="POST" action="{{ url_for('delete_material', material_id=material.id) }}"
+                              onsubmit="return confirm('确定要删除吗？');">
+                            <button type="submit" class="btn btn-danger btn-sm">删除</button>
+                        </form>
+                    </td>
+                </tr>
             {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- 分页 -->
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if current_page > 1 %}
+                <li class="page-item"><a class="page-link" href="{{ url_for('view_materials', page=current_page-1, q=q) }}">上一页</a></li>
+            {% endif %}
+
+            {% for page_num in range(max(1, current_page - 3), min(total_pages + 1, current_page + 4)) %}
+                <li class="page-item {% if page_num == current_page %}active{% endif %}">
+                    <a class="page-link" href="{{ url_for('view_materials', page=page_num, q=q) }}">{{ page_num }}</a>
+                </li>
+            {% endfor %}
+
+            {% if current_page < total_pages %}
+                <li class="page-item"><a class="page-link" href="{{ url_for('view_materials', page=current_page +1, q=q) }}">下一页</a></li>
+                <li class="page-item"><a class="page-link" href="{{ url_for('view_materials', page=total_pages, q=q) }}">最后一页</a></li>
+            {% endif %}
         </ul>
-    {% endif %}
-{% endwith %}
+    </nav>
+
 </div>
 </body>
 </html>
