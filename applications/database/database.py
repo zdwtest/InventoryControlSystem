@@ -1,3 +1,5 @@
+import datetime
+
 from flask import Flask
 from flask_login import UserMixin
 from peewee import *
@@ -29,6 +31,7 @@ class Users(BaseModel, UserMixin):
         table_name = 'users'
 
 
+
 # 材料类别模型
 class MaterialCategory(BaseModel):
     id = AutoField()
@@ -51,10 +54,21 @@ class Material(BaseModel):
     kcs = DecimalField(decimal_places=2, null=False)  # 库存数量(kcs)
     pjj = DecimalField(decimal_places=2, null=True)  # 平均价(pjj)
     kczj = DecimalField(decimal_places=2, null=True)  # 库存总价(kczj)
+    is_custom = BooleanField(default=False)  # 是否定制
 
     class Meta:
         table_name = 'materials'
+# 材料出入库模型
+class MaterialTransaction(BaseModel):
+    id = AutoField()
+    material = ForeignKeyField(Material, backref='transactions')
+    transaction_type = CharField(choices=[('in', '入库'), ('out', '出库')])
+    quantity = FloatField()
+    unit_price = DecimalField(decimal_places=2) # 使用DecimalField, 并设置精度
+    timestamp = DateTimeField(default=datetime.datetime.now)
 
+    class Meta:
+        table_name = 'material_transaction'
 
 # 产品类别模型
 class ProductCategory(BaseModel):
@@ -76,6 +90,7 @@ class Product(BaseModel):
     hh = CharField(unique=True)  # 货号(hh) 使用 code 作为主键，确保唯一性
     dw = CharField(null=True)  # 单位 (dw)
     kcs = DecimalField(decimal_places=2, null=False)  # 库存数量(kcs)
+    is_custom = BooleanField(default=False)  # 是否定制
 
     class Meta:
         table_name = 'products'
@@ -131,7 +146,7 @@ class ProductPriceBudgetFormula(BaseModel):
 # 在Flask应用上下文中创建数据库表
 with app.app_context():
     database.create_tables([
-        Users, MaterialCategory, Material, ProductCategory, Product, ProductMaterial, ProductProcessParameter,
+        Users, MaterialCategory, Material,MaterialTransaction ,ProductCategory, Product, ProductMaterial, ProductProcessParameter,
         ProductPriceBudgetFormula
     ])
 

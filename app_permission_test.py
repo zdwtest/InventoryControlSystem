@@ -1,7 +1,5 @@
-import datetime
 import json
 import os
-from decimal import Decimal
 from functools import wraps
 from itertools import product
 
@@ -16,10 +14,11 @@ from applications.api.get_user_data import get_user_data
 from applications.database.database import database, Users, \
     MaterialCategory, Material, ProductCategory, \
     Product, ProductPriceBudgetFormula, \
-    ProductMaterial, ProductProcessParameter, MaterialTransaction  # 导入数据库模型
+    ProductMaterial, ProductProcessParameter  # 导入数据库模型
 
-app = Flask(__name__, static_url_path='/static', static_folder='static')
+app = Flask(__name__)
 app.secret_key = os.urandom(24)
+
 
 # Flask-Login 设置
 login_manager = LoginManager()
@@ -31,21 +30,35 @@ PERMISSION_MANAGE_MATERIALS = 0x2
 PERMISSION_MANAGE_PRODUCTS = 0x4
 PERMISSION_MANAGE_USERS = 0x8
 PERMISSION_VIEW_REPORTS = 0x10
-PERMISSION_REQUISITION = 0x20
+PERMISSION_MANAGE_REPORTS = 0x20
 
 roles_dict = {
     PERMISSION_VIEW: '普通员工',  # Map permissions to roles
-    PERMISSION_MANAGE_MATERIALS: '生产部门负责人',
-    PERMISSION_MANAGE_PRODUCTS: '设计部门负责人',
+    PERMISSION_MANAGE_MATERIALS: '材料部门负责人',
+    PERMISSION_MANAGE_PRODUCTS: '产品部门负责人',
     PERMISSION_MANAGE_USERS: '仓库管理员',
-    PERMISSION_REQUISITION: '车间领料人'  # Add additional roles as needed
+    PERMISSION_VIEW_REPORTS: '车间领料人'  # Add additional roles as needed
 }
 
+class Permission():
+    NORMAL_EMPLOYEE = 0x1
+    MATERIAL_MANAGER = 0x2
+    PRODUCT_MANAGER = 0x4
+    WAREHOUSE_ADMIN = 0x8
+    SHOP_FLOOR_LEADER = 0x10
+
+class PermissionManager:
+    def has_permission(self, user, permission):
+        return user.permissions & permission.value == permission.value
+
+    def update_permissions(self, user, selected_permissions):
+        user.permissions = sum(p.value for p in selected_permissions)
+        user.save()
 
 @login_manager.user_loader
 def load_user(user_id):
     try:
-        return Users.get(Users.id == user_id, Users.is_active == user_accessed,
+        return Users.get(Users.id == user_id,Users.is_active == user_accessed,
                          )
 
     except Users.DoesNotExist:
@@ -89,7 +102,7 @@ def login():
                 flash('用户名或密码错误', 'error')
         except Users.DoesNotExist:
             flash('用户名或密码错误', 'error')
-    return render_template('login.html', **user_data)
+    return render_template('login.html',**user_data)
 
 
 @app.route('/logout')
@@ -99,7 +112,15 @@ def logout():
     return redirect(url_for('login'))
 
 
-# 材料规格路由
+# 测试用户角色路由
+@app.route('/test_user_roles')
+@login_required
+def test_user_roles():
+    user_data = get_user_data()
+    print(user_data)
+    return render_template('test_user_roles.html', **user_data)
+
+# 管理材料规格路由
 @app.route('/materials', defaults={'page': 1, 'q': ''})
 @app.route('/materials/<int:page>', defaults={'q': ''})
 @app.route('/materials/<int:page>/<string:q>')
@@ -144,6 +165,7 @@ def view_materials(page, q):
         return render_template('index.html', error_message="加载物料时发生错误"), 500
 
 
+
 # 管理材料规格路由 (新增和修改)
 @app.route('/materials/manage', methods=['GET', 'POST'])
 @app.route('/materials/manage/<int:material_id>', methods=['GET', 'POST'])  # 允许编辑已有记录
@@ -157,59 +179,55 @@ def manage_materials(material_id=None):
     categories = MaterialCategory.select()
     material = Material.get_or_none(Material.id == material_id) if material_id else None
 
-    if material and material.is_custom:  # 检查是否是定制产品用料
-        flash('定制产品用料，数量等不能修改。', 'info')
-        return render_template('materials_manage.html', material=material, categories=categories, **user_data)
-
     if request.method == 'POST':
         try:
-            with database.atomic(): # 使用atomic()确保所有操作都在一个事务中
-                category_id = int(request.form['category'])
-                mc = request.form['mc']
-                ggxh = request.form['ggxh']
-                hh = request.form['hh']
-                dw = request.form['dw']
-                kcs = request.form['kcs']
-                pjj = request.form['pjj']
-                kczj = request.form['kczj']
+            category_id = int(request.form['category'])
+            mc = request.form['mc']
+            ggxh = request.form['ggxh']
+            hh = request.form['hh']
+            dw = request.form['dw']
+            kcs = request.form['kcs']
+            pjj = request.form['pjj']
+            kczj = request.form['kczj']
 
-                # 数据验证
-                if not mc or not hh or not kcs:
-                    raise ValueError("材料名称、货号和库存数量不能为空")
-                try:
-                    kcs = float(kcs)
-                    if kcs < 0:
-                        raise ValueError("库存数量不能为负数")
-                except ValueError:
-                    raise ValueError("库存数量必须是数字")
+            # 数据验证
+            if not mc or not hh or not kcs:
+                raise ValueError("材料名称、货号和库存数量不能为空")
+            try:
+                kcs = float(kcs)
+                if kcs < 0:
+                    raise ValueError("库存数量不能为负数")
+            except ValueError:
+                raise ValueError("库存数量必须是数字")
 
-                if material:
-                    material.category = MaterialCategory.get(MaterialCategory.id == category_id)
-                    material.mc = mc
-                    material.ggxh = ggxh
-                    material.hh = hh
-                    material.dw = dw
-                    material.kcs = kcs
-                    material.pjj = float(pjj) if pjj else None
-                    material.kczj = float(kczj) if kczj else None
-                    material.save()
-                    flash('材料规格修改成功!', 'success')
-                else:
-                    new_material = Material.create(
-                        category=MaterialCategory.get(MaterialCategory.id == category_id),
-                        mc=mc,
-                        ggxh=ggxh,
-                        hh=hh,
-                        dw=dw,
-                        kcs=kcs,
-                        pjj=float(pjj) if pjj else None,
-                        kczj=float(kczj) if kczj else None,
-                    )
-                    flash('材料规格添加成功!', 'success')
+            if material:
+                material.category = MaterialCategory.get(MaterialCategory.id == category_id)
+                material.mc = mc
+                material.ggxh = ggxh
+                material.hh = hh
+                material.dw = dw
+                material.kcs = kcs
+                material.pjj = float(pjj) if pjj else None
+                material.kczj = float(kczj) if kczj else None
+                material.save()
+                flash('材料规格修改成功!', 'success')
+            else:
+                new_material = Material.create(
+                    category=MaterialCategory.get(MaterialCategory.id == category_id),
+                    mc=mc,
+                    ggxh=ggxh,
+                    hh=hh,
+                    dw=dw,
+                    kcs=kcs,
+                    pjj=float(pjj) if pjj else None,
+                    kczj=float(kczj) if kczj else None,
+                )
+                flash('材料规格添加成功!', 'success')
 
         except MaterialCategory.DoesNotExist:
             flash("选择的类别不存在", 'error')
         except Exception as e:
+            database.rollback()
             flash(f'操作失败: {e}', 'error')
             return render_template('materials_manage.html', material=material, categories=categories, **user_data)
 
@@ -227,164 +245,15 @@ def delete_material(material_id):
     material = Material.get_or_none(Material.id == material_id)
     if material:
         try:
-            with database.atomic(): # 使用atomic()确保删除操作在一个事务中
-                material.delete_instance()
-                flash('材料规格删除成功!', 'success')
+            material.delete_instance()
+            flash('材料规格删除成功!', 'success')
         except Exception as e:
             flash(f'删除失败: {e}', 'error')
     else:
         flash('材料规格不存在', 'error')
     return redirect(url_for('materials'))
 
-# 材料领用路由
-@app.route('/materials/requisition/<int:material_id>', methods=['GET', 'POST'])
-@login_required
-def material_requisition(material_id):
-    user_data = get_user_data()  # 获取用户信息
-    material = Material.get_or_none(Material.id == material_id)  # 获取材料信息
-    # 检测领用权限
-    if not has_permission(current_user, PERMISSION_REQUISITION):
-        flash('您没有权限领用。', 'error')
-        return redirect(url_for('materials'))  # 重定向到材料列表页
 
-    if not material:
-        flash('材料不存在', 'error')
-        return redirect(url_for('materials'))  # 重定向到材料列表页
-
-    if request.method == 'POST':
-        try:
-            quantity = Decimal(request.form['quantity'])  # 获取领用数量
-            if quantity <= 0:
-                raise ValueError("领用数量必须大于0")
-            if material.kcs < quantity:
-                raise ValueError("库存不足")
-
-            with database.atomic():  # 使用数据库事务，确保数据一致性
-                # 计算出库材料的加权平均单价
-                transactions = MaterialTransaction.select().where(MaterialTransaction.material == material)
-                total_cost = sum(t.quantity * t.unit_price for t in transactions)
-                total_quantity = sum(t.quantity for t in transactions)
-                weighted_avg_price = (total_cost / total_quantity) if total_quantity else 0
-
-                MaterialTransaction.create(  # 创建材料领用记录
-                    material=material,
-                    transaction_type='out',
-                    quantity=quantity,
-                    unit_price=weighted_avg_price,
-                    timestamp=datetime.datetime.now()
-                )
-                material.kcs -= quantity  # 更新库存数量
-                material.save()
-                flash('材料领用成功!', 'success')
-                return redirect(url_for('view_materials'))  # 重定向到材料列表页
-
-        except ValueError as e:
-            flash(f'领用失败: {e}', 'error')
-        except Exception as e:
-            flash(f'领用失败: {e}', 'error')
-
-    return render_template('materials_requisition.html', material=material, **user_data)  # 渲染领用页面
-
-#未有的材料入库
-@app.route('/materials/stocking/new', methods=['GET', 'POST'])  # 新增材料入库
-@login_required
-def stocking_new_material():
-    user_data = get_user_data()
-    if not has_permission(current_user, PERMISSION_MANAGE_MATERIALS):
-        flash('您没有权限管理材料规格。', 'error')
-        return redirect(url_for('materials'))
-
-    categories = MaterialCategory.select()
-    if request.method == 'POST':
-        try:
-            with database.atomic():
-                category_id = int(request.form['category'])
-                mc = request.form['mc']
-                ggxh = request.form['ggxh']
-                hh = request.form['hh']
-                dw = request.form['dw']
-                quantity = Decimal(request.form['quantity'])
-                unit_price = Decimal(request.form['unit_price'])
-
-                if quantity <= 0:
-                    raise ValueError("入库数量必须大于0")
-                if not mc or not hh:
-                    raise ValueError("材料名称和货号不能为空")
-
-                category = MaterialCategory.get(MaterialCategory.id == category_id)
-                new_material = Material.create(
-                    category=category,
-                    mc=mc,
-                    ggxh=ggxh,
-                    hh=hh,
-                    dw=dw,
-                    kcs=quantity,
-                    pjj=unit_price,
-                    is_custom=False # Assume not custom
-                )
-
-                MaterialTransaction.create(
-                    material=new_material,
-                    transaction_type='in',
-                    quantity=quantity,
-                    unit_price=unit_price,
-                    timestamp=datetime.datetime.now()
-                )
-                flash("材料入库成功!", 'success')
-                return redirect(url_for('materials'))
-
-        except MaterialCategory.DoesNotExist:
-            flash('类别不存在', 'error')
-        except IntegrityError:
-            flash('货号已存在', 'error')
-        except Exception as e:
-            flash(f'入库失败: {e}', 'error')
-
-    return render_template('materials_stocking_new.html', categories=categories, **user_data)
-
-
-#已有材料入库
-@app.route('/materials/stocking/<int:material_id>', methods=['GET', 'POST'])  # 已有材料入库
-@login_required
-def stocking_existing_material(material_id):
-    user_data = get_user_data()
-    if not has_permission(current_user, PERMISSION_MANAGE_MATERIALS):
-        flash('您没有权限管理材料规格。', 'error')
-        return redirect(url_for('materials'))
-
-    material = Material.get_or_none(Material.id == material_id)
-    if not material:
-        flash('材料不存在', 'error')
-        return redirect(url_for('materials'))
-
-    if request.method == 'POST':
-        try:
-            with database.atomic():
-                quantity = Decimal(request.form['quantity'])
-                unit_price = Decimal(request.form['unit_price'])
-
-                if quantity <= 0:
-                    raise ValueError("入库数量必须大于0")
-
-                material.kcs += quantity
-                material.save()
-                MaterialTransaction.create(
-                    material=material,
-                    transaction_type='in',
-                    quantity=quantity,
-                    unit_price=unit_price,
-                    timestamp=datetime.datetime.now()
-                )
-                flash("材料入库成功!", 'success')
-                return redirect(url_for('materials'))
-
-        except Exception as e:
-            flash(f'入库失败: {e}', 'error')
-
-    return render_template('materials_stocking_existing.html', material=material, **user_data)
-
-
-@login_required
 # 管理产品规格路由
 @app.route('/products', defaults={'page': 1, 'q': ''})
 @app.route('/products/<int:page>', defaults={'q': ''})
@@ -411,11 +280,11 @@ def view_products(page, q):
         total = query.count()
         offset = (page - 1) * per_page
         products = (query
-                    .order_by(Product.id)
-                    .offset(offset)
-                    .limit(per_page)
-                    .objects()
-                    )
+                     .order_by(Product.id)
+                     .offset(offset)
+                     .limit(per_page)
+                     .objects()
+                     )
 
         total_pages = (total + per_page - 1) // per_page
 
@@ -428,6 +297,7 @@ def view_products(page, q):
     except Exception as e:
         print(f"Error in view_products: {e}")
         return render_template('index.html', error_message="加载物料时发生错误"), 500
+
 
 
 # 管理产品规格路由 (新增和修改)
@@ -518,51 +388,42 @@ def delete_product(product_id):
 # 用户权限编辑路由
 @app.route('/edit_user_permissions', methods=['GET', 'POST'])
 @login_required
-@admin_required
+@admin_required  # 假设你已经定义了 admin_required 装饰器
 def edit_user_permissions():
     if request.method == 'POST':
         try:
-            with database.atomic():
-                user_id = request.form.get('user_id')
-                user = Users.get(Users.id == user_id)
+            user_id = request.form.get('user_id')
+            user = Users.get(user_id)
+            if not user:
+                raise ValueError("用户不存在")
 
-                if request.form.get('selectAll') == '1':
-                    selected_roles = sum("0")
-                else:
-                    selected_roles = [int(r, 16) for r in request.form.getlist('role')]
+            selected_permissions = [Permission(int(r, 16)) for r in request.form.getlist('role')]
+            if not selected_permissions:
+                raise ValueError("未选择任何权限")
 
-                user.permissions = user.permissions | sum(selected_roles)
-                user.save()
-                flash('用户角色已更新。', 'success')
+            permission_manager = PermissionManager()
+            permission_manager.update_permissions(user, selected_permissions)
 
-        except (Users.DoesNotExist, ValueError, TypeError, IntegrityError) as e:
+            flash('用户角色已更新。', 'success')
+        except (ValueError) as e:
             flash(f'操作失败: {e}', 'danger')
             print(f"更新用户权限失败: {e}")
-        return redirect(url_for('edit_user_permissions'))
+        return redirect(url_for('user_permissions.edit_user_permissions'))
 
-    users = Users.select()
-    available_roles = [0x1, 0x2, 0x4, 0x8, 0x10]
-    roles_dict = {
-        0x1: '普通员工',
-        0x2: '生产部门负责人',
-        0x4: '设计部门负责人',
-        0x8: '仓库管理员',
-        0x10: '车间领料人'
-    }
+    # 获取所有用户和可用角色
+    users = Users()
+    available_roles = list()
+    roles_dict = {role.value: role.name for role in available_roles}
 
     return render_template('edit_user_permissions.html', users=users, available_roles=available_roles, roles=roles_dict)
-
-
 #权限检查函数 (添加到你的代码中)
 def has_permission(user, permission):
     return (user.permissions & permission) == permission
-
 
 # 注册自定义 Jinja2 过滤器
 @app.template_filter('check_permission')
 def check_permission(permissions, role):
     return (permissions & role) != 0
-
 
 if __name__ == '__main__':
     app.run(debug=True)
